@@ -1,3 +1,5 @@
+#include "libft/libft.h"
+
 static int	count_words(char const *s)
 {
 	int count;
@@ -16,15 +18,15 @@ static int	count_words(char const *s)
 		else if (!ft_isspace(s[i]))
 		{
 			count++;
-			while (s[i] != c && s[i])
-			i++;
+			while (s[i] != ' ' && s[i])
+				i++;
 		}
 		i = s[i] ? i + 1 : i;
 	}
 	return (count);
 }
 
-static int	count_len(char const *str, char c)
+static int	count_len(char const *s)
 {
 	int i;
 
@@ -70,7 +72,7 @@ char	**split_line(char const *s)
 		return (NULL);
 	while (j < word_count)
 	{
-		i = count_len(str, c);
+		i = count_len(str);
 		if (i > 0)
 		{
 			if (!(array[j++] = ft_substr(str, 0, i)))
@@ -82,4 +84,3 @@ char	**split_line(char const *s)
 	array[j] = NULL;
 	return (array);
 }
-

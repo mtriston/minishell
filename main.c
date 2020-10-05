@@ -1,12 +1,15 @@
+#include "libft/libft.h"
+
 int	execute_commands(char **args)
 {
 	int i;
 
 	i = 0;
+	return (1);
 
 }
 
-void	sh_loop(void)
+void	shell_loop(void)
 {
 	char	*line;
 	char	**args;
@@ -17,7 +20,7 @@ void	sh_loop(void)
 	status = execute_commands(args);
 }
 
-int	main(int argc, char **argc)
+int	main(int argc, char **argv)
 {
 	shell_loop();
 
