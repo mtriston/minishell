@@ -1,11 +1,11 @@
-#include "libft/libft.h"
+#include "minishell.h"
 
 int	execute_commands(char **args)
 {
 	int i;
 
 	i = 0;
-	return (1);
+	return (0);
 
 }
 
