@@ -21,7 +21,7 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <unistd.h>
-# include "../libft/libft.h"
+# include "libft/libft.h"
 
 int     main(int argc, char **argv);
 char    **split_line(char const *s);
