@@ -9,6 +9,37 @@ int cmd_echo(char **args, char **envp)
 	return(1);
 }
 
+int		launch_executable(char **args, char **envp)
+{
+	char path[PATH_MAX];
+	pid_t pid;
+	pid_t wpid;
+	int status;
+
+	if (args[0][0] == '.')
+	{
+		getcwd(path, PATH_MAX);
+		ft_strlcat(path, "/", PATH_MAX);
+		ft_strlcat(path, args[0] + 2, PATH_MAX);
+	}
+	else
+		ft_strlcpy(path, args[0], PATH_MAX);
+	pid = fork();
+	if (pid < 0)
+		perror("fork error");
+	else if (pid == 0)
+	{
+		execve(path, args, envp);
+	}
+	else
+	{
+		wpid = waitpid(pid, &status, WUNTRACED);
+		while (!WIFEXITED(status) && !WIFSIGNALED(status))
+			wpid = waitpid(pid, &status, WUNTRACED);
+	}
+	return (1);
+}
+
 int		(*launch_builtin(int i))(char **args, char **envp)
 {
 	int (*launch_builtin[BUILTIN_NUM])(char **args, char **envp);
@@ -49,7 +80,7 @@ int	execute(char *command, char **envp)
 	else if (ft_strncmp(args[0], "exit,", 4) == 0)
 		status = launch_builtin(EXIT)(args, envp);
 	else
-		ft_putendl_fd("Command not found", 1);
+		status = launch_executable(args, envp);
 	return (status);
 }
 
@@ -80,7 +111,7 @@ void		shell_loop(char **envp)
 			status = execute(*commands, envp);
 			commands++;
 		}
-		free_gc(line);
+		free_gc(NULL);
 		line = NULL;
 	}
 	free_gc(line);
