@@ -12,7 +12,7 @@
 
 NAME = minishell
 
-SRCS = main.c split_line.c
+SRCS = main.c split_line.c builtins.c
 
 OBJS = $(SRCS:.c = .o)
 

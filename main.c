@@ -50,7 +50,7 @@ int		(*launch_builtin(int i))(char **args, char **envp)
 	int (*launch_builtin[BUILTIN_NUM])(char **args, char **envp);
 
 	launch_builtin[ECHO] = &cmd_echo;
-	//launch_builtin[CD] = &cmd_cd;
+	launch_builtin[CD] = &cmd_cd;
 	//launch_builtin[PWD] = &cmd_pwd;
 	//launch_builtin[EXPORT] = &cmd_export;
 	//launch_builtin[UNSET] = &cmd_unset;

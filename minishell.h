@@ -35,5 +35,6 @@
 
 int		main(int argc, char **argv, char **envp);
 char    **split_line(char const *s);
+int		cmd_cd(char **args, char **envp);
 
 #endif
