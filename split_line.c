@@ -15,6 +15,12 @@ static int	count_words(char const *s)
 			while (s[++i] != '"' && s[i])
 				;
 		}
+		else if (s[i] == '\'')
+		{
+			count++;
+			while (s[++i] != '\'' && s[i])
+				;
+		}
 		else if (!ft_isspace(s[i]))
 		{
 			count++;
@@ -36,6 +42,14 @@ static int	count_len(char const *s)
 		i++;
 		while (s[i] != '"' && s[i])
 			i++;
+		i++;
+	}
+	else if (s[i] == '\'')
+	{
+		i++;
+		while (s[i] != '\'' && s[i])
+			i++;
+		i++;
 	}
 	else
 	{
