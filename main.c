@@ -1,14 +1,5 @@
 #include "minishell.h"
 
-int cmd_echo(char **args, char **envp)
-{
-	if (ft_strncmp(args[1], "-n", 2) == 0)
-		ft_putstr_fd(args[2], 1);
-	else
-		ft_putendl_fd(args[1], 1);
-	return(1);
-}
-
 int		launch_executable(char **args, char **envp)
 {
 	char path[PATH_MAX];
