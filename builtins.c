@@ -4,7 +4,6 @@ static char *search_env(char *arg, char **envp)
 {
 	char *temp;
 
-	ft_putendl_fd(arg, 1);
 	while (*envp)
 	{
 		if ((temp = ft_strnstr(*envp, arg, ft_strlen(*envp))))
