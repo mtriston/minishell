@@ -29,7 +29,12 @@ int		launch_executable(char **args, char **envp)
 		perror("fork error");
 	else if (pid == 0)
 	{
-		execve(path, args, envp);
+		if (execve(path, args, envp) == -1)
+		{
+			ft_putstr_fd("minishell: ", 1);
+			ft_putstr_fd(path, 1);
+			ft_putendl_fd(": No such file or directory", 1);
+		}
 	}
 	else
 	{
