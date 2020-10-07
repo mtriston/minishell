@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 20:15:32 by kdahl             #+#    #+#             */
-/*   Updated: 2020/10/05 20:30:22 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/10/05 21:54:16 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,11 @@
 # include <stdio.h>
 # include <fcntl.h>
 # include <errno.h>
-# include "../libft/libft.h"
+# include <stdio.h>
+# include <sys/types.h>
+# include <sys/wait.h>
+# include <unistd.h>
+# include "libft/libft.h"
 
 int     main(int argc, char **argv);
 char    **split_line(char const *s);
