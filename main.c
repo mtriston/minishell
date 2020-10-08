@@ -25,6 +25,7 @@ int		launch_executable(char **args, char **envp)
 			ft_putstr_fd("minishell: ", 1);
 			ft_putstr_fd(path, 1);
 			ft_putendl_fd(": No such file or directory", 1);
+			exit(EXIT_FAILURE);
 		}
 	}
 	else
