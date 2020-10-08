@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 20:15:32 by kdahl             #+#    #+#             */
-/*   Updated: 2020/10/08 00:25:43 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/10/08 21:05:15 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,9 @@ int		main(int argc, char **argv, char **envp);
 char    **split_line(char const *s);
 int		cmd_echo(char **args, char **envp);
 int		cmd_cd(char **args, char **envp);
-int		cmd_env(char **args, char **envp);
 int		cmd_exit(char **args, char **envp);
 int		cmd_pwd(char **args, char **envp);
+int		cmd_env(char **args, char **envp);
+
 
 #endif
