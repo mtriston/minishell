@@ -55,8 +55,7 @@ int	cmd_env(char **args, char **envp)
 
 	while (*envp)
 	{
-		ft_putstr_fd(*envp, 1);
-		write(1, "\n", 1);
+		ft_putendl_fd(*envp, 1);
 		envp++;
 	}
 	return (1);
@@ -64,16 +63,15 @@ int	cmd_env(char **args, char **envp)
 
 int	cmd_exit(char **args, char **envp)
 {
-	exit(0);
+	free_gc(NULL);
 	return (0);
 }
 
 int	cmd_pwd(char **args, char **envp)
 {
-	char buf[200];
+	char buf[PATH_MAX];
 
-	getcwd(buf, 200);
-	ft_putstr_fd(buf, 1);
-	write(1, "\n", 1);
+	getcwd(buf, PATH_MAX);
+	ft_putendl_fd(buf, 1);
 	return (1);
 }
