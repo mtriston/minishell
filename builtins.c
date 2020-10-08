@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-static char *search_env(char *arg, char **envp)
+static char *get_env(char *arg, char **envp)
 {
 	char *temp;
 
@@ -26,7 +26,7 @@ int cmd_echo(char **args, char **envp)
 		while (*++args)
 		{
 			if (*args[0] == '$')
-				*args = search_env(*args + 1, envp);
+				*args = get_env(*args + 1, envp);
 			ft_putstr_fd(*args, 1);
 			if (*args + 1 != NULL)
 				ft_putstr_fd(" ", 1);
@@ -38,12 +38,13 @@ int cmd_echo(char **args, char **envp)
 
 int cmd_cd(char **args, char **envp)
 {
-	char *home_dir;
+	char *dir;
 
 	if (args[1] == NULL)
-		chdir(search_env("HOME", envp));
+		dir = get_env("HOME", envp);
 	else
-		if (chdir(args[1]) != 0)
-			ft_putendl_fd("No such directory", 1);
+		dir = args[1];
+	if (chdir(dir) != 0)
+		ft_putendl_fd("No such directory", 1);
 	return (1);
 }
