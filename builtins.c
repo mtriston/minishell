@@ -47,3 +47,32 @@ int cmd_cd(char **args, char **envp)
 			ft_putendl_fd("No such directory", 1);
 	return (1);
 }
+
+int	cmd_env(char **args, char **envp)
+{
+	// Не обновляет окружени при переходе в другие папки
+
+	while (*envp)
+	{
+		ft_putstr_fd(*envp, 1);
+		write(1, "\n", 1);
+		envp++;
+	}
+	return (1);
+}
+
+int	cmd_exit(char **args, char **envp)
+{
+	exit(0);
+	return (0);
+}
+
+int	cmd_pwd(char **args, char **envp)
+{
+	char buf[200];
+
+	getcwd(buf, 200);
+	ft_putstr_fd(buf, 1);
+	write(1, "\n", 1);
+	return (1);
+}
