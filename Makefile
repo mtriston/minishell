@@ -6,13 +6,13 @@
 #    By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/05 20:19:48 by kdahl             #+#    #+#              #
-#    Updated: 2020/10/08 00:55:52 by kdahl            ###   ########.fr        #
+#    Updated: 2020/10/09 19:44:37 by kdahl            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
 
-SRCS = main.c split_line.c builtins.c
+SRCS = main.c split_line.c builtins.c cmd_export.c
 
 OBJS = $(SRCS:.c = .o)
 

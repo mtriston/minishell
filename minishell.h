@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 20:15:32 by kdahl             #+#    #+#             */
-/*   Updated: 2020/10/08 00:25:43 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/10/09 20:00:29 by kdahl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,5 +40,8 @@ int		cmd_cd(char **args, char **envp);
 int		cmd_env(char **args, char **envp);
 int		cmd_exit(char **args, char **envp);
 int		cmd_pwd(char **args, char **envp);
+int		cmd_export(char **args, char **envp);
+int		ft_find_char(char *str, char c);
+int		envp_len(char **envp);
 
 #endif
