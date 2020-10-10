@@ -1,42 +1,5 @@
 #include "minishell.h"
 
-int		launch_executable(char **args, char **envp)
-{
-	char path[PATH_MAX];
-	pid_t pid;
-	pid_t wpid;
-	int status;
-
-	if (args[0][0] == '.')
-	{
-		getcwd(path, PATH_MAX);
-		ft_strlcat(path, "/", PATH_MAX);
-		ft_strlcat(path, args[0] + 2, PATH_MAX);
-	}
-	else
-		ft_strlcpy(path, args[0], PATH_MAX);
-	pid = fork();
-	if (pid < 0)
-		perror("fork error");
-	else if (pid == 0)
-	{
-		if (execve(path, args, envp) == -1)
-		{
-			ft_putstr_fd("minishell: ", 1);
-			ft_putstr_fd(path, 1);
-			ft_putendl_fd(": No such file or directory", 1);
-			exit(EXIT_FAILURE);
-		}
-	}
-	else
-	{
-		wpid = waitpid(pid, &status, WUNTRACED);
-		while (!WIFEXITED(status) && !WIFSIGNALED(status))
-			wpid = waitpid(pid, &status, WUNTRACED);
-	}
-	return (1);
-}
-
 int		(*launch_builtin(int i))(char **args, char **envp)
 {
 	int (*launch_builtin[BUILTIN_NUM])(char **args, char **envp);
@@ -83,9 +46,9 @@ int	execute(char *command, char **envp)
 
 static void print_prompt()
 {
-	char buf[200];
+	char buf[PATH_MAX];
 
-	getcwd(buf, 200);
+	getcwd(buf, PATH_MAX);
 	ft_putstr_fd("\033[1m \033[31m minishell:", 1);
 	ft_putstr_fd(buf, 1);
 	ft_putstr_fd("$ \033[0m", 1);

@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-static char *get_env(char *arg, char **envp)
+char *ft_getenv(char *arg, char **envp)
 {
 	char *temp;
 
@@ -12,7 +12,7 @@ static char *get_env(char *arg, char **envp)
 		}
 		envp++;
 	}
-	return ("");
+	return (NULL);
 }
 
 int cmd_echo(char **args, char **envp)
@@ -26,7 +26,7 @@ int cmd_echo(char **args, char **envp)
 		while (*++args)
 		{
 			if (*args[0] == '$')
-				*args = get_env(*args + 1, envp);
+				*args = ft_getenv(*args + 1, envp);
 			ft_putstr_fd(*args, 1);
 			if (*args + 1 != NULL)
 				ft_putstr_fd(" ", 1);
@@ -41,7 +41,7 @@ int cmd_cd(char **args, char **envp)
 	char *dir;
 
 	if (args[1] == NULL)
-		dir = get_env("HOME", envp);
+		dir = ft_getenv("HOME", envp);
 	else
 		dir = args[1];
 	if (chdir(dir) != 0)
