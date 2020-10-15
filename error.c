@@ -14,7 +14,8 @@
 
 void ft_perror(char *s)
 {
-	ft_putstr_fd(s, 2);
-	ft_putstr_fd(": ", 2);
-	ft_putendl_fd(strerror(errno), 2);
+	ft_putstr_fd("minishell: ", 2);
+	ft_putendl_fd(s, 2);
+	if (errno != 0)
+		ft_putendl_fd(strerror(errno), 2);
 }

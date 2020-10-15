@@ -7,9 +7,7 @@ char *ft_getenv(char *arg, char **envp)
 	while (*envp)
 	{
 		if ((temp = ft_strnstr(*envp, arg, ft_strlen(*envp))))
-		{
 			return (temp + ft_strlen(arg) + 1);
-		}
 		envp++;
 	}
 	return (NULL);
@@ -45,14 +43,13 @@ int cmd_cd(char **args, char **envp)
 	else
 		dir = args[1];
 	if (chdir(dir) != 0)
-		ft_putendl_fd("No such directory", 1);
+		ft_perror("minishell");
+	//export("PWD", getcwd(NULL, 0), envp);
 	return (1);
 }
 
 int	cmd_env(char **args, char **envp)
 {
-	// Не обновляет окружени при переходе в другие папки
-
 	while (*envp)
 	{
 		ft_putendl_fd(*envp, 1);

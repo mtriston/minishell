@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/10 20:30:29 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/10 21:33:42 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/10 21:35:10 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static char *find_command(char *cmd, char **envp)
 	DIR *dir;
 	struct dirent *entry;
 
-	if (!(path_dirs = ft_split(ft_getenv("PATH", envp), ':')))
+	if (!(path_dirs = ft_split(ft_getenv("PATH", envp), ":")))
 		return (NULL);
 	while (*path_dirs != NULL)
 	{
@@ -59,10 +59,8 @@ int		launch_executable(char **args, char **envp)
 	else if (pid == 0)
 	{
 		if (execve(path, args, envp) == -1)
-		{
 			ft_perror("minishell");
-			exit(EXIT_FAILURE);
-		}
+		exit(EXIT_FAILURE);
 	}
 	else
 		wait(NULL);
