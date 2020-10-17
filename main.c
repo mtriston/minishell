@@ -57,20 +57,13 @@ static void print_prompt(char **envp)
 	ft_putstr_fd("$ \033[0m", 1);
 }
 
-char	*read_line()
+int	read_line(char **line)
 {
-	char *line;
-
-	line = NULL;
-	get_next_line(0, &line);
-	if (!line)
-		return (NULL);
-	if (!lexer(line))
-	{
-		free_gc(line);
-		line = NULL;
-	}
-	return (line);
+	if (get_next_line(0, line) == -1)
+		return (0);
+	if (!validate_line(line))
+		return (0);
+	return (1);
 }
 
 void		shell_loop(char **envp)
@@ -82,9 +75,9 @@ void		shell_loop(char **envp)
 	status = 1;
 	while (status)
 	{
+		line = NULL;
 		print_prompt(envp);
-		if (!(line = read_line()))
-			continue;
+		read_line(&line);
 		commands = ft_split(line, ";");
 		while (status && commands && *commands)
 		{

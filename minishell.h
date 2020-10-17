@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
+/*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 20:15:32 by kdahl             #+#    #+#             */
-/*   Updated: 2020/10/15 22:49:29 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/17 17:17:31 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,18 @@
 # define ENV 5
 # define EXIT 6
 
-typedef struct	s_cmd
+# define TYPE_PIPE 1
+# define TYPE_BREAK 2
+# define TYPE_BIGGER 3
+# define TYPE_LOWER 4
+
+typedef struct		s_token
 {
-	char		*name;
-	char		**args;
-	int 		in;
-	int 		out;
-}				t_cmd;
+	char			*data;
+	int				type;
+	struct s_token	*next;
+	struct s_token	*prev;
+}					t_token;
 
 int		main(int argc, char **argv, char **envp);
 char    **split_line(char const *s);
@@ -53,7 +58,8 @@ int		cmd_exit(char **args, char **envp);
 int		cmd_pwd(char **args, char **envp);
 int		cmd_env(char **args, char **envp);
 void	ft_perror(char *s);
-int 	lexer(char *line);
-char	*read_line();
+t_token *lexer(char *line);
+int		validate_line(char **line);
+int		read_line(char **line);
 
 #endif
