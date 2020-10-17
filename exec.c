@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/10 20:30:29 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/10 21:35:10 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/17 17:37:42 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int		launch_executable(char **args, char **envp)
 	else if (pid == 0)
 	{
 		if (execve(path, args, envp) == -1)
-			ft_perror("minishell");
+			ft_perror(NULL);
 		exit(EXIT_FAILURE);
 	}
 	else

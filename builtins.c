@@ -43,7 +43,7 @@ int cmd_cd(char **args, char **envp)
 	else
 		dir = args[1];
 	if (chdir(dir) != 0)
-		ft_perror("minishell");
+		ft_perror(NULL);
 	//export("PWD", getcwd(NULL, 0), envp);
 	return (1);
 }
