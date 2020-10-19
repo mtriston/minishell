@@ -13,42 +13,45 @@ char *ft_getenv(char *arg, char **envp)
 	return (NULL);
 }
 
-int cmd_echo(char **args, char **envp)
+int cmd_echo(t_cmd *cmd, char **envp)
 {
-	if (args[1] == NULL)
-		ft_putstr_fd("\n", 1);
-	else if (ft_strncmp(args[1], "-n", 2) == 0)
-		ft_putstr_fd(args[2], 1);
-	else
+	//TODO: Сейчас работает неверно из-за недоделанного парсера
+	int		n_flag;
+	size_t	i;
+
+	n_flag = 0;
+	i = 0;
+	if (cmd->args[0] != NULL)
 	{
-		while (*++args)
+		if (ft_strncmp(cmd->args[0], "-n", 2) == 0)
+			n_flag = 1;
+		while (cmd->args[++i])
 		{
-			if (*args[0] == '$')
-				*args = ft_getenv(*args + 1, envp);
-			ft_putstr_fd(*args, 1);
-			if (*args + 1 != NULL)
+			ft_putstr_fd(cmd->args[i], 1);
+			if (cmd->args[i + 1] != NULL)
 				ft_putstr_fd(" ", 1);
 		}
-		ft_putstr_fd("\n", 1);
+		if (!n_flag)
+			ft_putstr_fd("\n", 1);
 	}
 		return(1);
 }
 
-int cmd_cd(char **args, char **envp)
+int cmd_cd(t_cmd *cmd, char **envp)
 {
 	char *dir;
 
-	if (args[1] == NULL)
+	if (cmd->args[1] == NULL)
 		dir = ft_getenv("HOME", envp);
 	else
-		dir = args[1];
+		dir = cmd->args[1];
 	if (chdir(dir) != 0)
 		ft_perror(NULL);
 	//export("PWD", getcwd(NULL, 0), envp);
 	return (1);
 }
 
-int	cmd_env(char **args, char **envp)
+int	cmd_env(t_cmd *cmd, char **envp)
 {
 	while (*envp)
 	{
@@ -58,13 +61,13 @@ int	cmd_env(char **args, char **envp)
 	return (1);
 }
 
-int	cmd_exit(char **args, char **envp)
+int	cmd_exit(t_cmd *cmd, char **envp)
 {
 	free_gc(NULL);
-	return (0);
+	exit(EXIT_SUCCESS);
 }
 
-int	cmd_pwd(char **args, char **envp)
+int	cmd_pwd(t_cmd *cmd, char **envp)
 {
 	char buf[PATH_MAX];
 

@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/10 20:30:29 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/17 17:37:42 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/19 21:02:13 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,30 +35,30 @@ static char *find_command(char *cmd, char **envp)
 	return (NULL);
 }
 
-int		launch_executable(char **args, char **envp)
+int		launch_executable(t_cmd *cmd, char **envp)
 {
 	char path[PATH_MAX];
 	pid_t pid;
 
-	if (args[0][0] == '.' && args[0][1] == '/')
+	if (cmd->name[0] == '.' && cmd->name[1] == '/')
 	{
 		getcwd(path, PATH_MAX);
-		ft_strlcat(path, args[0] + 1, PATH_MAX);
+		ft_strlcat(path, cmd->name + 1, PATH_MAX);
 	}
-	else if (args[0][0] == '/')
-		ft_strlcpy(path, args[0], PATH_MAX);
+	else if (cmd->name[0] == '/')
+		ft_strlcpy(path, cmd->name, PATH_MAX);
 	else
 	{
-		ft_strlcpy(path, find_command(args[0], envp), PATH_MAX);
+		ft_strlcpy(path, find_command(cmd->name, envp), PATH_MAX);
 		ft_strlcat(path, "/", PATH_MAX);
-		ft_strlcat(path, args[0], PATH_MAX);
+		ft_strlcat(path, cmd->name, PATH_MAX);
 	}
 	pid = fork();
 	if (pid < 0)
 		ft_perror("fork error");
 	else if (pid == 0)
 	{
-		if (execve(path, args, envp) == -1)
+		if (execve(path, cmd->args, envp) == -1)
 			ft_perror(NULL);
 		exit(EXIT_FAILURE);
 	}
