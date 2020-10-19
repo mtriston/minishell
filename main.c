@@ -1,8 +1,8 @@
 #include "minishell.h"
 
-int		(*launch_builtin(int i))(char **args, char **envp)
+int		(*launch_builtin(int i))(t_cmd *cmd, char **envp)
 {
-	int (*launch_builtin[BUILTIN_NUM])(char **args, char **envp);
+	int (*launch_builtin[BUILTIN_NUM])(t_cmd *cmd, char **envp);
 
 	launch_builtin[ECHO] = &cmd_echo;
 	launch_builtin[CD] = &cmd_cd;
@@ -14,78 +14,81 @@ int		(*launch_builtin(int i))(char **args, char **envp)
 	return (launch_builtin[i]);
 }
 
-/*
- *  TODO: заменить strncmp на strcmp для точной проверки на равенство.
- */
-
-int	execute(char *command, char **envp)
+int	execute_cmd(t_cmd *cmd, char **envp)
 {
-	char	**args;
 	int		status;
 
-	args = split_line(command);
-	status = 1;
-	if (ft_strcmp(args[0], "echo") == 0)
-		status = launch_builtin(ECHO)(args, envp);
-	else if (ft_strcmp(args[0], "cd") == 0)
-		status = launch_builtin(CD)(args, envp);
-	else if (ft_strcmp(args[0], "pwd") == 0)
-		status = launch_builtin(PWD)(args, envp);
-	else if (ft_strcmp(args[0], "export") == 0)
-		status = launch_builtin(EXPORT)(args, envp);
-	else if (ft_strcmp(args[0], "unset") == 0)
-		status = launch_builtin(UNSET)(args, envp);
-	else if (ft_strcmp(args[0], "env") == 0)
-		status = launch_builtin(ENV)(args, envp);
-	else if (ft_strcmp(args[0], "exit") == 0)
-		status = launch_builtin(EXIT)(args, envp);
+	status = SUCCESS;
+	if (ft_strcmp(cmd->name, "echo") == 0)
+		status = launch_builtin(ECHO)(cmd, envp);
+	else if (ft_strcmp(cmd->name, "cd") == 0)
+		status = launch_builtin(CD)(cmd, envp);
+	else if (ft_strcmp(cmd->name, "pwd") == 0)
+		status = launch_builtin(PWD)(cmd, envp);
+	else if (ft_strcmp(cmd->name, "export") == 0)
+		status = launch_builtin(EXPORT)(cmd, envp);
+	else if (ft_strcmp(cmd->name, "unset") == 0)
+		status = launch_builtin(UNSET)(cmd, envp);
+	else if (ft_strcmp(cmd->name, "env") == 0)
+		status = launch_builtin(ENV)(cmd, envp);
+	else if (ft_strcmp(cmd->name, "exit") == 0)
+		status = launch_builtin(EXIT)(cmd, envp);
 	else
-		status = launch_executable(args, envp);
+		status = launch_executable(cmd, envp);
+	return (status);
+}
+
+static int	execute_line(char *cmd_line, char **env)
+{
+	t_cmd	cmd;
+	int 	status;
+
+	status = SUCCESS;
+	while (*cmd_line)
+	{
+		cmd_line = parse_next_cmd(cmd_line, &cmd, env);
+		status = execute_cmd(&cmd, env);
+//		destroy_cmd(&cmd);
+	}
 	return (status);
 }
 
 static void print_prompt(char **envp)
 {
-	char buf[PATH_MAX];
+	char	*path;
+	char	*home;
+	int 	home_len;
 
-	getcwd(buf, PATH_MAX);
-	ft_putstr_fd("\033[1m \033[31m minishell:", 1);
-	if (ft_strcmp(buf, ft_getenv("HOME", envp)) == 0)
+	path = getcwd(NULL, 0);
+	home = ft_getenv("HOME", envp);
+	home_len = ft_strlen(home);
+	ft_putstr_fd("\033[1m \033[31m ", 1);
+	ft_putstr_fd(ft_getenv("USERNAME", envp), 1);
+	ft_putstr_fd(":", 1);
+	if (ft_strncmp(path, home, home_len) == 0)
+	{
 		ft_putstr_fd("~", 1);
+		ft_putstr_fd(path + home_len, 1);
+	}
 	else
-		ft_putstr_fd(buf, 1);
+		ft_putstr_fd(path, 1);
 	ft_putstr_fd("$ \033[0m", 1);
-}
-
-int	read_line(char **line)
-{
-	if (get_next_line(0, line) == -1)
-		return (0);
-	if (!validate_line(line))
-		return (0);
-	return (1);
+	free(path);
 }
 
 void		shell_loop(char **envp)
 {
-	char 	*line;
-	char	**commands;
-	int		status;
+	char 	*cmd_line;
+	int 	status;
 
-	status = 1;
-	while (status)
+	status = SUCCESS;
+	while (status == SUCCESS)
 	{
-		line = NULL;
+		cmd_line = NULL;
 		print_prompt(envp);
-		read_line(&line);
-		commands = ft_split(line, ";");
-		while (status && commands && *commands)
-		{
-			status = execute(*commands, envp);
-			commands++;
-		}
-		free_gc(NULL);
-		line = NULL;
+		cmd_line = read_line();
+		status = execute_line(cmd_line, envp);
+		free_gc(cmd_line);
 	}
 	free_gc(NULL);
 }
