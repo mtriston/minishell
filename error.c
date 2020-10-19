@@ -6,13 +6,21 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/10 21:25:42 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/10 21:31:01 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/18 14:10:51 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void ft_perror(char *s)
+int		syntax_error(char *token)
+{
+	ft_putstr_fd("syntax error near unexpected token `",1);
+	ft_putstr_fd(token, 1);
+	ft_putendl_fd("'\"", 1);
+	return (FAILURE);
+}
+
+void	ft_perror(char *s)
 {
 	ft_putstr_fd("minishell: ", 2);
 	ft_putendl_fd(s, 2);
