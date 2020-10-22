@@ -1,3 +1,5 @@
 minishell
-./idea
+.idea/
 ./vscode
+CMakeLists.txt
+cmake-build-debug/
