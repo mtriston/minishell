@@ -6,13 +6,13 @@
 #    By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/05 20:19:48 by kdahl             #+#    #+#              #
-#    Updated: 2020/10/19 20:46:54 by mtriston         ###   ########.fr        #
+#    Updated: 2020/10/21 20:28:02 by mtriston         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
 
-SRCS = main.c split_line.c builtins.c exec.c error.c read_line.c parser.c
+SRCS = main.c builtins.c exec.c error.c read_line.c parser.c lexer.c lexer_utils.c
 
 OBJS = $(SRCS:.c = .o)
 

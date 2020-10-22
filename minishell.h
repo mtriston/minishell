@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 20:15:32 by kdahl             #+#    #+#             */
-/*   Updated: 2020/10/19 20:46:54 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/21 19:32:48 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,12 @@
 # define ENV 5
 # define EXIT 6
 
-# define TYPE_PIPE 1
-# define TYPE_BREAK 2
-# define TYPE_BIGGER 3
-# define TYPE_LOWER 4
+typedef struct		s_token
+{
+	char			*data;
+	int				type;
+	struct s_token	*next;
+}					t_token;
 
 typedef struct		s_cmd
 {
@@ -66,5 +68,6 @@ void	ft_perror(char *s);
 char	*read_line();
 int		syntax_error(char *token);
 char 			*parse_next_cmd(char *cmd_line, t_cmd *cmd, char **env);
+t_token		*lexer(char *line, char **env);
 
 #endif

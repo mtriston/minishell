@@ -6,19 +6,35 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/19 22:16:56 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/19 22:16:56 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/22 22:59:01 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+int		token_list_size(t_token *lst)
+{
+	t_token	*ptr;
+	int		i;
 
-static int		search_separator(char *line)
+	if (!lst)
+		return (0);
+	ptr = lst;
+	i = 1;
+	while (ptr->next)
+	{
+		ptr = ptr->next;
+		i++;
+	}
+	return (i);
+}
+
+static int		search_separator(const char *line)
 {
 	int i;
 
 	i = 0;
-	while (line[i] && line[i] != ';' && line[i] != '|')
+	while (line[i] && line[i] != ';')
 	{
 		if (line[i] == '\\')
 			i++;
@@ -91,27 +107,27 @@ int 		parse_redirect_in(t_list **tokens)
 }
 */
 
-static char		*parse_cmd_name(t_list **tokens)
+static char		*parse_cmd_name(t_token **tokens)
 {
 	if (tokens && *tokens)
-		return ((*tokens)->content);
+		return ((*tokens)->data);
 	return (NULL);
 }
 
-static char 	**parse_cmd_args(t_list **tokens)
+static char 	**parse_cmd_args(t_token **tokens)
 {
-	t_list	*ptr;
+	t_token	*ptr;
 	size_t	i;
 	char 	**args;
 
 	ptr = *tokens;
 	i = 0;
-	args = malloc_gc((ft_lstsize(*tokens) + 1) * sizeof(char *));
+	args = malloc_gc((token_list_size(*tokens) + 1) * sizeof(char *));
 	if (!args)
 		return (NULL);
 	while (ptr)
 	{
-		args[i++] = ptr->content;
+		args[i++] = ptr->data;
 		ptr = ptr->next;
 	}
 	args[i] = NULL;
@@ -120,7 +136,7 @@ static char 	**parse_cmd_args(t_list **tokens)
 
 char 			*parse_next_cmd(char *cmd_line, t_cmd *cmd, char **env)
 {
-	t_list	*tokens;
+	t_token	*tokens;
 	char	*current_line;
 	int		i;
 
@@ -131,7 +147,7 @@ char 			*parse_next_cmd(char *cmd_line, t_cmd *cmd, char **env)
 		cmd_line[i] = '\0';
 		i++;
 	}
-	tokens = split_into_tokens(current_line);
+	tokens = lexer(current_line, env);
 	cmd->name = parse_cmd_name(&tokens);
 	cmd->args = parse_cmd_args(&tokens);
 //	cmd->in = parse_redirect_in(&tokens);

@@ -6,11 +6,11 @@ char *ft_getenv(char *arg, char **envp)
 
 	while (*envp)
 	{
-		if ((temp = ft_strnstr(*envp, arg, ft_strlen(*envp))))
+		if ((temp = ft_strnstr(*envp, arg, ft_strlen(arg))))
 			return (temp + ft_strlen(arg) + 1);
 		envp++;
 	}
-	return (NULL);
+	return ("");
 }
 
 int cmd_echo(t_cmd *cmd, char **envp)

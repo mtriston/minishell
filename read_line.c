@@ -36,10 +36,10 @@ static int	check_begin(char *line)
 
 static int	check_end(char *line)
 {
-	int i;
-	int continue_input;
+	size_t i;
+	int		continue_input;
 
-	i = ft_strlen(line) - 1;
+	i = ft_strlen(line) - 1; //if strlen == 0?
 	continue_input = line[i] == '\\' ? 1 : 0;
 	while (i >= 0 && ft_isspace(line[i]))
 		i--;

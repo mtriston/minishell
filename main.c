@@ -96,6 +96,5 @@ void		shell_loop(char **envp)
 int	main(int argc, char **argv, char **envp)
 {
 	shell_loop(envp);
-
 	return(0);
 }
