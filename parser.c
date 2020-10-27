@@ -6,11 +6,51 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/19 22:16:56 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/22 22:59:01 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/27 19:45:15 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "lexer.h"
+
+static void		token_del_one(t_token *lst, void (*del)(void*))
+{
+	if (lst != NULL)
+	{
+		del(lst->data);
+		free_gc(lst);
+	}
+}
+
+static void		remove_token(t_token **root, t_token *for_delete)
+{
+	t_token	*node;
+	t_token	*temp;
+	int		i;
+
+	if (*root && *root == for_delete)
+	{
+		temp = (*root)->next;
+		token_del_one(*root, free_gc);
+		(*root) = temp;
+	}
+	node = *root;
+	temp = *root;
+	i = 0;
+	while (node != NULL)
+	{
+		if (node == for_delete)
+		{
+			temp->next = node->next;
+			token_del_one(node, free_gc);
+			node = temp;
+			i = 0;
+			break;
+		}
+		temp = i++ > 0 ? temp->next : temp;
+		node = node != NULL ? node->next : node;
+	}
+}
 
 int		token_list_size(t_token *lst)
 {
@@ -43,75 +83,80 @@ static int		search_separator(const char *line)
 	return (i);
 }
 
-static t_list	*split_into_tokens(char *line)
+int 		is_there_redirect(t_token *list, char *token)
 {
-	t_list	*tokens;
-	char 	*data;
-	int		i;
-	int 	j;
-
-	tokens = NULL;
-	data = calloc_gc(ft_strlen(line) + 1, sizeof(char));
-	i = 0;
-	j = 0;
-	while (line[i] != '\0')
+	while (list)
 	{
-		if (ft_isalnum(line[i]))
-			data[j++] = line[i++];
-		if (line[i] == '\\')
-		{
-			i++;
-			data[j++] = line[i++];
-		}
-		if (!ft_isspace(line[i]))
-			data[j++] = line[i++];
-		if (ft_isspace(line[i]))
-		{
-			while (ft_isspace(line[i]))
-				i++;
-			ft_lstadd_back(&tokens, ft_lstnew(data));
-			data = calloc_gc(sizeof(data), sizeof(char));
-			j = 0;
-		}
+		if (list->type == TYPE_SPECIAL && (ft_strcmp(token, list->data) == 0))
+			return (1);
+		list = list->next;
 	}
-	ft_lstadd_back(&tokens, ft_lstnew(data));
-	return (tokens);
+	return (0);
 }
 
-/*
-int 		parse_redirect_in(t_list **tokens)
+int 		parse_redirect_in(t_token **tokens, int fd)
 {
-	t_list	*ptr;
-	int 	fd;
+	t_token	*ptr;
 
 	ptr = *tokens;
-	fd = 0;
+	if (!is_there_redirect(*tokens, "<"))
+		return (fd);
 	while (ptr)
 	{
-		if (ft_strcmp(ptr->content, "<"))
+		if (ptr->type == TYPE_SPECIAL && (ft_strcmp(ptr->data, "<") == 0))
 		{
-			free_gc(ptr->content);
-			ptr->content = NULL;
-			ptr = ptr->next;
-			if (!(fd = open(ptr ? ptr->content : NULL, O_RDONLY)))
-				ft_perror("");
-			}
-			if (ptr)
+			if (ptr->next)
 			{
-				free(ptr->content);
-				ptr->content = NULL;
+//				if (fd != 0)
+//					close(fd);
+				fd = open(ptr->next->data, O_RDONLY);
 			}
+			fd = fd > 0 ? fd : 0;
+			remove_token(tokens, ptr);
+			remove_token(tokens, ptr->next);
+			break;
 		}
 		ptr = ptr->next;
 	}
+	return (parse_redirect_in(tokens, fd));
 }
-*/
+
+int				parse_redirect_out(t_token **tokens, int fd)
+{
+	t_token	*ptr;
+
+	ptr = *tokens;
+	if (!is_there_redirect(*tokens, ">"))
+		return (fd);
+	while (ptr)
+	{
+		if (ptr->type == TYPE_SPECIAL && (ft_strcmp(ptr->data, ">") == 0))
+		{
+			if (ptr->next)
+			{
+		//		if (fd != 1)
+		//			close(fd);
+				fd = open(ptr->next->data, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
+				printf("%d\n", fd);
+			}
+			fd = fd > 1 ? fd : 1;
+			remove_token(tokens, ptr);
+			remove_token(tokens, ptr->next);
+			break;
+		}
+		ptr = ptr->next;
+	}
+	return (parse_redirect_out(tokens, fd));
+}
 
 static char		*parse_cmd_name(t_token **tokens)
 {
+	char *name;
+
+	name = NULL;
 	if (tokens && *tokens)
-		return ((*tokens)->data);
-	return (NULL);
+		name = ft_strdup((*tokens)->data);
+	return (name);
 }
 
 static char 	**parse_cmd_args(t_token **tokens)
@@ -148,9 +193,9 @@ char 			*parse_next_cmd(char *cmd_line, t_cmd *cmd, char **env)
 		i++;
 	}
 	tokens = lexer(current_line, env);
+	cmd->in = parse_redirect_in(&tokens, 0);
+	cmd->out = parse_redirect_out(&tokens, 1);
 	cmd->name = parse_cmd_name(&tokens);
 	cmd->args = parse_cmd_args(&tokens);
-//	cmd->in = parse_redirect_in(&tokens);
-//	cmd->out = parse_redirect_out(&tokens);
 	return (&cmd_line[i]);
 }
