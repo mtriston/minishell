@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/21 19:32:51 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/22 23:20:26 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/27 20:58:41 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,13 +39,13 @@ char		*decode_env(char *line, char **envp)
 	return (decode_env(temp, envp));
 }
 
-void 		handle_quote(char **line, t_token **token)
+void 		handle_quote(char **line, t_token **token, char quote)
 {
 	size_t i;
 
 	i = 0;
 	(*line)++;
-	while ((*line)[i] && (*line)[i] != '\'')
+	while ((*line)[i] && (*line)[i] != quote)
 		i++;
 	ft_strlcat((*token)->data, *line, ft_strlen((*token)->data) + i + 1);
 	*line = *line + i;
@@ -108,8 +108,8 @@ t_token		*lexer(char *line, char **env)
 	{
 		if (*line == '>' || *line == '<' || *line == '|')
 			handle_redirect(&line, &current, data_size);
-		else if (*line == '\'')
-			handle_quote(&line, &current);
+		else if (*line == '\'' || *line == '\"')
+			handle_quote(&line, &current, *line);
 		else if (*line == '\\')
 			handle_backslash(&line, &current);
 		else if (ft_isblank(*line))
