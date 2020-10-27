@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/19 22:16:56 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/27 19:45:15 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/27 20:48:21 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,8 +107,8 @@ int 		parse_redirect_in(t_token **tokens, int fd)
 		{
 			if (ptr->next)
 			{
-//				if (fd != 0)
-//					close(fd);
+				if (fd != 0)
+					close(fd);
 				fd = open(ptr->next->data, O_RDONLY);
 			}
 			fd = fd > 0 ? fd : 0;
@@ -134,8 +134,8 @@ int				parse_redirect_out(t_token **tokens, int fd)
 		{
 			if (ptr->next)
 			{
-		//		if (fd != 1)
-		//			close(fd);
+				if (fd != 1)
+					close(fd);
 				fd = open(ptr->next->data, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
 				printf("%d\n", fd);
 			}
@@ -183,6 +183,7 @@ char 			*parse_next_cmd(char *cmd_line, t_cmd *cmd, char **env)
 {
 	t_token	*tokens;
 	char	*current_line;
+	char	**splited_line;
 	int		i;
 
 	current_line = cmd_line;
@@ -192,6 +193,8 @@ char 			*parse_next_cmd(char *cmd_line, t_cmd *cmd, char **env)
 		cmd_line[i] = '\0';
 		i++;
 	}
+	splited_line = split_pipe(current_line);
+
 	tokens = lexer(current_line, env);
 	cmd->in = parse_redirect_in(&tokens, 0);
 	cmd->out = parse_redirect_out(&tokens, 1);

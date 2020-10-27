@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 19:21:06 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/22 19:21:06 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/27 21:26:58 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,13 @@
 #define TYPE_GENERAL 0
 #define TYPE_SPECIAL 1
 
+t_token		*lexer(char *line, char **env);
 void		add_token_back(t_token **lst, t_token *new);
 t_token		*token_init(int data_size, t_token **root);
-int 		is_there_env(const char *line);
+void		token_del_one(t_token *lst, void (*del)(void*));
+void		remove_token(t_token **root, t_token *for_delete);
+int			token_list_size(t_token *lst);
+int			validate_line(char *line);
+char		*handle_env_var(char *line, char **envp);
 
 #endif

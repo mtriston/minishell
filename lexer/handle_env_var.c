@@ -1,47 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lexer.utils.c                                      :+:      :+:    :+:   */
+/*   handle_env_var.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/10/22 19:19:35 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/22 19:42:39 by mtriston         ###   ########.fr       */
+/*   Created: 2020/10/27 21:23:39 by mtriston          #+#    #+#             */
+/*   Updated: 2020/10/27 21:23:39 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 #include "lexer.h"
 
-void		add_token_back(t_token **lst, t_token *new)
-{
-	t_token *ptr;
-
-	if (lst && *lst)
-	{
-		ptr = *lst;
-		while (ptr->next)
-			ptr = ptr->next;
-		ptr->next = new;
-	}
-	else if (lst)
-		*lst = new;
-}
-
-t_token		*token_init(int data_size, t_token **root)
-{
-	t_token *elem;
-
-	if (!(elem = malloc_gc(sizeof(t_token))))
-		return (NULL);
-	elem->data = calloc_gc((data_size + 1), sizeof(char));
-	elem->type = TYPE_GENERAL;
-	elem->next = NULL;
-	add_token_back(root, elem);
-	return (elem);
-}
-
-int 		is_there_env(const char *line)
+static int	is_there_env(const char *line)
 {
 	size_t i;
 
@@ -61,4 +33,30 @@ int 		is_there_env(const char *line)
 		i++;
 	}
 	return (-1);
+}
+
+char		*handle_env_var(char *line, char **envp)
+{
+	char	*begin;
+	char	*variable;
+	char	*temp;
+	size_t	i;
+
+	i = 0;
+	if (is_there_env(line) < 0)
+		return (line);
+	begin = line;
+	line = line + is_there_env(line);
+	*line = '\0';
+	line++;
+	while (line[i] && ft_isalnum(line[i]))
+		i++;
+	variable = ft_substr(line, 0, i);
+	line += i;
+	temp = ft_strjoin(begin, ft_getenv(variable,envp));
+	variable = temp;
+	temp = ft_strjoin(variable, line);
+	free_gc(variable);
+	free_gc(line);
+	return (handle_env_var(temp, envp));
 }
