@@ -6,68 +6,15 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/19 22:16:56 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/27 20:48:21 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/27 22:07:58 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
-#include "lexer.h"
+#include "../minishell.h"
+#include "parser.h"
+#include "../lexer/lexer.h"
 
-static void		token_del_one(t_token *lst, void (*del)(void*))
-{
-	if (lst != NULL)
-	{
-		del(lst->data);
-		free_gc(lst);
-	}
-}
 
-static void		remove_token(t_token **root, t_token *for_delete)
-{
-	t_token	*node;
-	t_token	*temp;
-	int		i;
-
-	if (*root && *root == for_delete)
-	{
-		temp = (*root)->next;
-		token_del_one(*root, free_gc);
-		(*root) = temp;
-	}
-	node = *root;
-	temp = *root;
-	i = 0;
-	while (node != NULL)
-	{
-		if (node == for_delete)
-		{
-			temp->next = node->next;
-			token_del_one(node, free_gc);
-			node = temp;
-			i = 0;
-			break;
-		}
-		temp = i++ > 0 ? temp->next : temp;
-		node = node != NULL ? node->next : node;
-	}
-}
-
-int		token_list_size(t_token *lst)
-{
-	t_token	*ptr;
-	int		i;
-
-	if (!lst)
-		return (0);
-	ptr = lst;
-	i = 1;
-	while (ptr->next)
-	{
-		ptr = ptr->next;
-		i++;
-	}
-	return (i);
-}
 
 static int		search_separator(const char *line)
 {
@@ -179,13 +126,15 @@ static char 	**parse_cmd_args(t_token **tokens)
 	return (args);
 }
 
-char 			*parse_next_cmd(char *cmd_line, t_cmd *cmd, char **env)
+char 			*parse_next_cmd(char *cmd_line, t_cmd **cmd, char **env)
 {
 	t_token	*tokens;
+	t_cmd	*current_cmd;
 	char	*current_line;
 	char	**splited_line;
 	int		i;
 
+	current_cmd = cmd_init(cmd);
 	current_line = cmd_line;
 	i = search_separator(cmd_line);
 	if (cmd_line[i])
@@ -194,11 +143,16 @@ char 			*parse_next_cmd(char *cmd_line, t_cmd *cmd, char **env)
 		i++;
 	}
 	splited_line = split_pipe(current_line);
-
-	tokens = lexer(current_line, env);
-	cmd->in = parse_redirect_in(&tokens, 0);
-	cmd->out = parse_redirect_out(&tokens, 1);
-	cmd->name = parse_cmd_name(&tokens);
-	cmd->args = parse_cmd_args(&tokens);
+	while (*splited_line)
+	{
+		tokens = lexer(*splited_line++, env);
+		current_cmd->in = parse_redirect_in(&tokens, 0);
+		current_cmd->out = parse_redirect_out(&tokens, 1);
+		current_cmd->name = parse_cmd_name(&tokens);
+		current_cmd->args = parse_cmd_args(&tokens);
+		if (*splited_line)
+			current_cmd = cmd_init(cmd);
+	}
+	tab_free_gc(splited_line);
 	return (&cmd_line[i]);
 }
