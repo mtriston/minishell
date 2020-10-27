@@ -40,14 +40,20 @@ int	execute_cmd(t_cmd *cmd, char **envp)
 
 static int	execute_line(char *cmd_line, char **env)
 {
-	t_cmd	cmd;
+	t_cmd	*cmd;
 	int 	status;
 
 	status = SUCCESS;
 	while (*cmd_line)
 	{
+		cmd = NULL;
 		cmd_line = parse_next_cmd(cmd_line, &cmd, env);
-		status = execute_cmd(&cmd, env);
+		// нижний while идет по связному списку cmd, который содержит команды, которые должны быть связаны между собой пайпами. Пайпы нереализованы.
+		while (cmd)
+		{
+			status = execute_cmd(cmd, env);
+			cmd = cmd->next;
+		}
 //		destroy_cmd(&cmd);
 	}
 	return (status);
