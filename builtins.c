@@ -2,12 +2,10 @@
 
 char *ft_getenv(char *arg, char **envp)
 {
-	char *temp;
-
 	while (*envp)
 	{
-		if ((temp = ft_strnstr(*envp, arg, ft_strlen(arg))))
-			return (temp + ft_strlen(arg) + 1);
+		if (ft_strncmp(*envp, arg, ft_found(*envp, '=')) == 0)
+			return (*envp + ft_strlen(arg) + 1);
 		envp++;
 	}
 	return ("");
