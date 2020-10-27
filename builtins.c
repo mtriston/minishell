@@ -47,7 +47,7 @@ int cmd_cd(t_cmd *cmd, char **envp)
 		dir = cmd->args[1];
 	if (chdir(dir) != 0)
 		ft_perror(NULL);
-	//export("PWD", getcwd(NULL, 0), envp);
+	//cmd_export("PWD", getcwd(NULL, 0), envp);
 	return (1);
 }
 

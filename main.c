@@ -7,8 +7,8 @@ int		(*launch_builtin(int i))(t_cmd *cmd, char **envp)
 	launch_builtin[ECHO] = &cmd_echo;
 	launch_builtin[CD] = &cmd_cd;
 	launch_builtin[PWD] = &cmd_pwd;
-	//launch_builtin[EXPORT] = &cmd_export;
-	//launch_builtin[UNSET] = &cmd_unset;
+	launch_builtin[EXPORT] = &cmd_export;
+	launch_builtin[UNSET] = &cmd_unset;
 	launch_builtin[ENV] = &cmd_env;
 	launch_builtin[EXIT] = &cmd_exit;
 	return (launch_builtin[i]);

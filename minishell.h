@@ -69,5 +69,8 @@ char	*read_line();
 int		syntax_error(char *token);
 char 			*parse_next_cmd(char *cmd_line, t_cmd *cmd, char **env);
 t_token		*lexer(char *line, char **env);
-
+int			cmd_export(t_cmd *cmd, char **envp);
+int			cmd_unset(t_cmd *cmd, char **envp);
+int			ft_found(char *str, char c);
+int			envp_len(char **envp);
 #endif
