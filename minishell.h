@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 20:15:32 by kdahl             #+#    #+#             */
-/*   Updated: 2020/10/21 19:32:48 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/27 21:50:58 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,8 @@ typedef struct		s_cmd
 	char			**args;
 	int				in;
 	int 			out;
-	struct s_token	*next;
-	struct s_token	*prev;
+	struct s_cmd	*next;
+	struct s_cmd	*prev;
 }					t_cmd;
 
 int		main(int argc, char **argv, char **envp);
@@ -67,8 +67,7 @@ int		cmd_env(t_cmd *cmd, char **envp);
 void	ft_perror(char *s);
 char	*read_line();
 int		syntax_error(char *token);
-char 			*parse_next_cmd(char *cmd_line, t_cmd *cmd, char **env);
-t_token		*lexer(char *line, char **env);
+char 		*parse_next_cmd(char *cmd_line, t_cmd **cmd, char **env);
 int			cmd_export(t_cmd *cmd, char **envp);
 int			cmd_unset(t_cmd *cmd, char **envp);
 int			ft_found(char *str, char c);
