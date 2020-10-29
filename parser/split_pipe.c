@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:29:36 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/27 21:38:59 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/29 21:06:47 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,11 @@ static int	count_words(char const *s)
 	int count;
 	int i;
 
-	count = 0;
 	i = 0;
+	count = 0;
 	while (s && s[i])
 	{
-		if (s[i] == '\\')
-			i++;
-		else if (s[i] != '|')
+		if (s[i] != '|')
 		{
 			count++;
 			while (s[i])

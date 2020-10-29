@@ -6,11 +6,12 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:22 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/27 21:09:22 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/29 21:47:02 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include "lexer.h"
 
 /*
  * Читается STDIN, затем проверяется корректность ввода.
@@ -31,7 +32,7 @@ static int	check_begin(char *line)
 		else
 			return (syntax_error(";"));
 	}
-	return (SUCCESS);
+	return (VALID_LINE);
 }
 
 static int	check_end(char *line)
@@ -39,8 +40,11 @@ static int	check_end(char *line)
 	size_t i;
 	int		continue_input;
 
-	i = ft_strlen(line) - 1; //if strlen == 0?
-	continue_input = line[i] == '\\' ? 1 : 0;
+	i = ft_strlen(line);
+	continue_input = 0;
+	i = i == 0 ? i : i - 1;
+	if (i >= 1 && line[i] == '\\' && line[i - 1] != '\\')
+		continue_input = 1;
 	while (i >= 0 && ft_isspace(line[i]))
 		i--;
 	if (line[i] == '<' || line[i] == '>')
@@ -48,9 +52,9 @@ static int	check_end(char *line)
 	if (line[i] == '|' || continue_input)
 	{
 		ft_putstr_fd("> ", 1);
-		return (2);
+		return (CONTINUE_INPUT);
 	}
-	return (SUCCESS);
+	return (VALID_LINE);
 }
 
 static int		check_next_char(char c, char *line)
@@ -70,30 +74,38 @@ static int		check_next_char(char c, char *line)
 		return (syntax_error("<"));
 	if (*line == ';')
 		return (syntax_error(";"));
-	if (*line == '|' && (c == ';' || c == '<'))
+	if (*line == '|' && (c == ';' || c == '<' || c == '|'))
 		return (syntax_error("|"));
-	return (SUCCESS);
+	return (VALID_LINE);
 }
 
 int	validate_line(char *line)
 {
 	int status;
+	int in_quote;
+	int in_dquote;
 	int i;
 
-	status = SUCCESS;
+	status = VALID_LINE;
+	in_quote = 0;
+	in_dquote = 0;
 	i = 0;
-	if (check_begin(line) == FAILURE)
-		return (FAILURE);
-	while (line[i] != '\0' && status == SUCCESS)
+	if (check_begin(line) == SYNTAX_ERROR)
+		return (SYNTAX_ERROR);
+	while (line[i] != '\0' && status == VALID_LINE)
 	{
 		if (line[i] == '\\')
 			i++;
-		else if (line[i] == ';')
-			status = check_next_char(';', &line[i + 1]);
+		else if (line[i] == '\"' && !in_quote)
+			in_dquote = !in_dquote;
+		else if (line[i] == '\'' && !in_dquote)
+			in_quote = !in_quote;
+		else if (ft_strchr("<>|;", line[i]) && !in_quote && !in_dquote)
+			status = check_next_char(line[i], &line[i + 1]);
 		i++;
 	}
-	if (status == FAILURE)
-		return (FAILURE);
+	if (status == SYNTAX_ERROR)
+		return (SYNTAX_ERROR);
 	status = check_end(line);
 	return (status);
 }

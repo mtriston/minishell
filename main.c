@@ -93,6 +93,8 @@ void		shell_loop(char **envp)
 		cmd_line = NULL;
 		print_prompt(envp);
 		cmd_line = read_line();
+		if (!cmd_line)
+			continue;
 		status = execute_line(cmd_line, envp);
 		free_gc(cmd_line);
 	}

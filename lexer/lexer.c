@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/21 19:32:51 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/27 21:26:58 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/29 19:55:25 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ void 		handle_quote(char **line, t_token **token, char quote)
 	(*line)++;
 	while ((*line)[i] && (*line)[i] != quote)
 		i++;
-	ft_strlcat((*token)->data, *line, ft_strlen((*token)->data) + i + 1);
+	i++;
+	ft_strlcat((*token)->data, *line, ft_strlen((*token)->data) + i);
 	*line = *line + i;
 }
 

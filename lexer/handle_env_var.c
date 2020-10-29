@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:23:39 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/27 21:23:39 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/29 19:59:12 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,18 @@
 
 static int	is_there_env(const char *line)
 {
-	size_t i;
+	int		in_dquote;
+	size_t	i;
 
 	i = 0;
+	in_dquote = -1;
 	while (line[i])
 	{
 		if (line[i] == '\\')
 			i++;
-		else if (line[i] == '\'')
+		else if (line[i] == '"')
+			in_dquote *= -1;
+		else if (line[i] == '\'' && in_dquote == -1)
 		{
 			i++;
 			while (line[i] && line[i] != '\'')

@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/19 22:16:56 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/27 22:07:58 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/29 21:04:14 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,22 @@
 static int		search_separator(const char *line)
 {
 	int i;
+	int in_quote;
+	int in_dquote;
 
 	i = 0;
-	while (line[i] && line[i] != ';')
+	in_quote = -1;
+	in_dquote = -1;
+	while (line[i])
 	{
 		if (line[i] == '\\')
 			i++;
+		else if (line[i] == '\'')
+			in_quote *= -1;
+		else if (line[i] == '\"')
+			in_dquote *= -1;
+		else if (line[i] == ';' && in_quote == -1 && in_dquote == -1)
+			return (i);
 		i++;
 	}
 	return (i);
@@ -99,7 +109,6 @@ int				parse_redirect_out(t_token **tokens, int fd)
 static char		*parse_cmd_name(t_token **tokens)
 {
 	char *name;
-
 	name = NULL;
 	if (tokens && *tokens)
 		name = ft_strdup((*tokens)->data);

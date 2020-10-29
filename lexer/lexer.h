@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 19:21:06 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/27 21:26:58 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/29 19:17:49 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,10 @@
 
 #define TYPE_GENERAL 0
 #define TYPE_SPECIAL 1
+
+# define SYNTAX_ERROR 2
+# define VALID_LINE 1
+# define CONTINUE_INPUT 0
 
 t_token		*lexer(char *line, char **env);
 void		add_token_back(t_token **lst, t_token *new);

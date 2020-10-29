@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/10 21:25:42 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/18 14:10:51 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/29 19:28:10 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 
 int		syntax_error(char *token)
 {
+	ft_putstr_fd("minishell: ",1);
 	ft_putstr_fd("syntax error near unexpected token `",1);
 	ft_putstr_fd(token, 1);
-	ft_putendl_fd("'\"", 1);
-	return (FAILURE);
+	ft_putendl_fd("'", 1);
+	return (2);
 }
 
 void	ft_perror(char *s)
