@@ -74,7 +74,7 @@ t_token		*lexer(char *line, char **env)
 	t_token *current;
 	size_t 	data_size;
 
-	line = handle_env_var(line, env);
+	line = prepare_line(line, env);
 	data_size = ft_strlen(line);
 	root = token_init(data_size, NULL);
 	current = root;

@@ -27,6 +27,7 @@ void		token_del_one(t_token *lst, void (*del)(void*));
 void		remove_token(t_token **root, t_token *for_delete);
 int			token_list_size(t_token *lst);
 int			validate_line(char *line);
-char		*handle_env_var(char *line, char **envp);
+char		*prepare_line(char *line, char **envp);
+
 
 #endif

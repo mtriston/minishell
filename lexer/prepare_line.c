@@ -6,14 +6,14 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:23:39 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/29 19:59:12 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/10/31 15:02:24 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 #include "lexer.h"
 
-static int	is_there_env(const char *line)
+static int	is_there_spec(const char *line, char spec_symbol)
 {
 	int		in_dquote;
 	size_t	i;
@@ -32,14 +32,14 @@ static int	is_there_env(const char *line)
 			while (line[i] && line[i] != '\'')
 				i++;
 		}
-		else if (line[i] == '$')
+		else if (line[i] == spec_symbol)
 			return (i);
 		i++;
 	}
 	return (-1);
 }
 
-char		*handle_env_var(char *line, char **envp)
+static char	*handle_env_var(char *line, char **envp)
 {
 	char	*begin;
 	char	*variable;
@@ -47,10 +47,10 @@ char		*handle_env_var(char *line, char **envp)
 	size_t	i;
 
 	i = 0;
-	if (is_there_env(line) < 0)
+	if (is_there_spec(line, '$') < 0)
 		return (line);
 	begin = line;
-	line = line + is_there_env(line);
+	line = line + is_there_spec(line, '$');
 	*line = '\0';
 	line++;
 	while (line[i] && ft_isalnum(line[i]))
@@ -63,4 +63,35 @@ char		*handle_env_var(char *line, char **envp)
 	free_gc(variable);
 	free_gc(line);
 	return (handle_env_var(temp, envp));
+}
+
+static char *handle_tilda(char *line, char **envp)
+{
+
+	char	*begin;
+	char	*home_dir;
+	char	*temp;
+	size_t	i;
+
+	i = 0;
+	if (is_there_spec(line, '~') < 0)
+		return (line);
+	begin = line;
+	line = line + is_there_spec(line, '~');
+	*line = '\0';
+	line++;
+	home_dir = ft_getenv("HOME", envp);
+	temp = ft_strjoin(begin, home_dir);
+	home_dir = temp;
+	temp = ft_strjoin(home_dir, line);
+	free_gc(home_dir);
+	free_gc(line);
+	return (handle_env_var(temp, envp));
+}
+
+char		*prepare_line(char *line, char **envp)
+{
+	line = handle_env_var(line, envp);
+	line = handle_tilda(line, envp);
+	return (line);
 }
