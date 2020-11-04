@@ -14,7 +14,7 @@ int		(*launch_builtin(int i))(t_cmd *cmd, char **envp)
 	return (launch_builtin[i]);
 }
 
-int	execute_cmd(t_cmd *cmd, char **envp)
+int execute_cmd_in_child(t_cmd *cmd, char **envp)
 {
 	int		status;
 
@@ -38,25 +38,72 @@ int	execute_cmd(t_cmd *cmd, char **envp)
 	return (status);
 }
 
+void wait_child(pid_t pid, int *status)
+{
+	pid_t wpid;
+
+	while (1)
+	{
+		wpid = waitpid(pid, status, WUNTRACED);
+		if (wpid >= 0)
+			break;
+	}
+}
+
+int	execute_cmd(t_cmd *cmd, char **envp, t_exec exec)
+{
+	exec.pid = fork();
+	if (exec.pid < 0)
+		exit(EXIT_FAILURE);
+	if (exec.pid == 0)
+	{
+		dup2(exec.fd_previous, 0);
+		dup2(exec.fd_out, 1);
+		exec.status = execute_cmd_in_child(cmd, envp);
+	}
+	if (exec.pid > 0)
+	{
+		wait_child(exec.pid, &exec.status);
+	}
+
+	return (1);
+	// всегда 1, не будет работать exit. костыль,
+	// т.к. не сделана нормальная обработка статусов
+}
+
 static int	execute_line(char *cmd_line, char **env)
 {
 	t_cmd	*cmd;
-	int 	status;
+	t_exec 	exec;
 
-	status = SUCCESS;
+	exec.status = SUCCESS;
+	exec.fd_out = 1;
+	exec.fd_previous = 0;
 	while (*cmd_line)
 	{
 		cmd = NULL;
 		cmd_line = parse_next_cmd(cmd_line, &cmd, env);
-		// нижний while идет по связному списку cmd, который содержит команды, которые должны быть связаны между собой пайпами. Пайпы нереализованы.
 		while (cmd)
 		{
-			status = execute_cmd(cmd, env);
+			if (cmd->next)
+			{
+				pipe(exec.fd_pipe);
+				exec.fd_out = exec.fd_pipe[1];
+				exec.status = execute_cmd(cmd, env, exec);
+				close(exec.fd_pipe[1]);
+				exec.fd_previous = exec.fd_pipe[0];
+				exec.fd_out = 1;
+			}
+			else
+			{
+				exec.status = execute_cmd(cmd, env, exec);
+				exec.fd_previous = 0;
+			}
 			cmd = cmd->next;
 		}
 //		destroy_cmd(&cmd);
 	}
-	return (status);
+	return (exec.status);
 }
 
 static void print_prompt(char **envp)

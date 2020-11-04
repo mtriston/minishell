@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 20:15:32 by kdahl             #+#    #+#             */
-/*   Updated: 2020/10/29 19:17:49 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/04 18:01:58 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,15 @@
 # define UNSET 4
 # define ENV 5
 # define EXIT 6
+
+typedef struct s_exec
+{
+	int			fd_previous;
+	int			fd_out;
+	int			fd_pipe[2];
+	pid_t		pid;
+	int			status;
+}				t_exec;
 
 typedef struct		s_token
 {

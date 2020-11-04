@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/10 20:30:29 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/22 23:25:16 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/04 18:56:48 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,17 +53,8 @@ int		launch_executable(t_cmd *cmd, char **envp)
 		ft_strlcat(path, "/", PATH_MAX);
 		ft_strlcat(path, cmd->name, PATH_MAX);
 	}
-	pid = fork();
-	if (pid < 0)
-		ft_perror("fork error");
-	else if (pid == 0)
-	{
-		if (execve(path, cmd->args, envp) == -1)
-			ft_perror(NULL);
-		exit(EXIT_FAILURE);
-	}
-	else
-		wait(NULL);
-	//TODO: уведомление об ошибке?
+	if (execve(path, cmd->args, envp) == -1)
+		ft_perror(NULL);
+	exit(EXIT_FAILURE);
 	return (1);
 }
