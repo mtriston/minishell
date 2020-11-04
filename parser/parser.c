@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/19 22:16:56 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/29 21:04:14 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/04 22:03:49 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,6 @@ int				parse_redirect_out(t_token **tokens, int fd)
 				if (fd != 1)
 					close(fd);
 				fd = open(ptr->next->data, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
-				printf("%d\n", fd);
 			}
 			fd = fd > 1 ? fd : 1;
 			remove_token(tokens, ptr);

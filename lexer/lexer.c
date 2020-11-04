@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/21 19:32:51 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/29 19:55:25 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/04 22:06:15 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,8 @@ void 		handle_general(char **line, t_token **token)
 
 void 		handle_redirect(char **line, t_token **token, int data_size)
 {
-	*token = token_init(data_size, token);
+	if ((*token)->data[0])
+		*token = token_init(data_size, token);
 	(*token)->type = TYPE_SPECIAL;
 	(*token)->data[0] = **line;
 	if ((**line == '>' || **line == '<') && **line == *((*line) + 1))
