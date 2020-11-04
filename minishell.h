@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 20:15:32 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/04 18:01:58 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/04 21:59:07 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@
 
 typedef struct s_exec
 {
-	int			fd_previous;
+	int			fd_in;
 	int			fd_out;
 	int			fd_pipe[2];
 	pid_t		pid;

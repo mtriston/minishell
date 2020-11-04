@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/11/04 21:54:35 by mtriston          #+#    #+#             */
+/*   Updated: 2020/11/04 21:59:35 by mtriston         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #include "minishell.h"
 
 int		(*launch_builtin(int i))(t_cmd *cmd, char **envp)
@@ -57,7 +68,11 @@ int	execute_cmd(t_cmd *cmd, char **envp, t_exec exec)
 		exit(EXIT_FAILURE);
 	if (exec.pid == 0)
 	{
-		dup2(exec.fd_previous, 0);
+		if (cmd->out != 1)
+			exec.fd_out = cmd->out;
+		if (cmd->in != 0)
+			exec.fd_in = cmd->in;
+		dup2(exec.fd_in, 0);
 		dup2(exec.fd_out, 1);
 		exec.status = execute_cmd_in_child(cmd, envp);
 		exit(exec.status);
@@ -79,7 +94,7 @@ static int	execute_line(char *cmd_line, char **env)
 
 	exec.status = SUCCESS;
 	exec.fd_out = 1;
-	exec.fd_previous = 0;
+	exec.fd_in = 0;
 	while (*cmd_line)
 	{
 		cmd = NULL;
@@ -92,13 +107,13 @@ static int	execute_line(char *cmd_line, char **env)
 				exec.fd_out = exec.fd_pipe[1];
 				exec.status = execute_cmd(cmd, env, exec);
 				close(exec.fd_pipe[1]);
-				exec.fd_previous = exec.fd_pipe[0];
+				exec.fd_in = exec.fd_pipe[0];
 				exec.fd_out = 1;
 			}
 			else
 			{
 				exec.status = execute_cmd(cmd, env, exec);
-				exec.fd_previous = 0;
+				exec.fd_in = 0;
 			}
 			cmd = cmd->next;
 		}
