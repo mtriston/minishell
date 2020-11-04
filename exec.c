@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/10 20:30:29 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/04 18:56:48 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/04 18:59:32 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,5 @@ int		launch_executable(t_cmd *cmd, char **envp)
 	}
 	if (execve(path, cmd->args, envp) == -1)
 		ft_perror(NULL);
-	exit(EXIT_FAILURE);
 	return (1);
 }

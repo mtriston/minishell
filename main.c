@@ -60,6 +60,7 @@ int	execute_cmd(t_cmd *cmd, char **envp, t_exec exec)
 		dup2(exec.fd_previous, 0);
 		dup2(exec.fd_out, 1);
 		exec.status = execute_cmd_in_child(cmd, envp);
+		exit(exec.status);
 	}
 	if (exec.pid > 0)
 	{

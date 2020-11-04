@@ -62,7 +62,7 @@ int	cmd_env(t_cmd *cmd, char **envp)
 int	cmd_exit(t_cmd *cmd, char **envp)
 {
 	free_gc(NULL);
-	exit(EXIT_SUCCESS);
+	return (1);
 }
 
 int	cmd_pwd(t_cmd *cmd, char **envp)
@@ -70,6 +70,6 @@ int	cmd_pwd(t_cmd *cmd, char **envp)
 	char buf[PATH_MAX];
 
 	getcwd(buf, PATH_MAX);
-	ft_putendl_fd(buf, 1);
+	printf("%s\n", buf);
 	return (1);
 }
