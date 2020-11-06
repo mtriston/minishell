@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/19 22:16:56 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/04 22:03:49 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/06 17:28:49 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,11 +67,12 @@ int 		parse_redirect_in(t_token **tokens, int fd)
 				if (fd != 0)
 					close(fd);
 				fd = open(ptr->next->data, O_RDONLY);
-			}
+					 // TODO: сделать нормальный выход
 			fd = fd > 0 ? fd : 0;
-			remove_token(tokens, ptr);
 			remove_token(tokens, ptr->next);
+			remove_token(tokens, ptr);
 			break;
+			}
 		}
 		ptr = ptr->next;
 	}
@@ -94,11 +95,11 @@ int				parse_redirect_out(t_token **tokens, int fd)
 				if (fd != 1)
 					close(fd);
 				fd = open(ptr->next->data, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
-			}
 			fd = fd > 1 ? fd : 1;
-			remove_token(tokens, ptr);
 			remove_token(tokens, ptr->next);
+			remove_token(tokens, ptr);
 			break;
+			}
 		}
 		ptr = ptr->next;
 	}
@@ -155,6 +156,8 @@ char 			*parse_next_cmd(char *cmd_line, t_cmd **cmd, char **env)
 	{
 		tokens = lexer(*splited_line++, env);
 		current_cmd->in = parse_redirect_in(&tokens, 0);
+//		if (current_cmd->in == -1)
+//			return (""); // сделать норм выход
 		current_cmd->out = parse_redirect_out(&tokens, 1);
 		current_cmd->name = parse_cmd_name(&tokens);
 		current_cmd->args = parse_cmd_args(&tokens);
