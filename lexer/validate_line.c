@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:22 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 13:16:21 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 13:45:00 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,28 @@
  * Сначала проверяются синтаксические ошибки, затем, если в конце строки
  * есть символ | или \, то предлагается продолжить ввод.
  */
+
+int			quotes_are_closed(const char *line)
+{
+	int i;
+	int in_quote;
+	int in_dquote;
+
+	i = 0;
+	in_quote = -1;
+	in_dquote = -1;
+	while (line[i])
+	{
+		if (line[i] == '\\')
+			i++;
+		else if (line[i] == '\'' && in_dquote == -1)
+			in_quote *= -1;
+		else if (line[i] == '\"' && in_quote == -1)
+			in_dquote *= -1;
+		i++;
+	}
+	return (in_quote == -1 && in_dquote == -1);
+}
 
 static int	check_begin(char *line)
 {
@@ -49,7 +71,7 @@ static int	check_end(char *line)
 		i--;
 	if (line[i] == '<' || line[i] == '>')
 		return (syntax_error("newline"));
-	if (line[i] == '|' || continue_input)
+	if (line[i] == '|' || continue_input || !quotes_are_closed(line))
 	{
 		ft_putstr_fd("> ", 1);
 		return (CONTINUE_INPUT);
