@@ -6,18 +6,18 @@
 #    By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/05 20:19:48 by kdahl             #+#    #+#              #
-#    Updated: 2020/10/09 19:44:37 by kdahl            ###   ########.fr        #
+#    Updated: 2020/11/07 14:32:16 by kdahl            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
 
-SRCS = main.c split_line.c builtins.c cmd_export.c
+SRCS = main.c builtins.c exec.c error.c export.c unset.c lexer/*.c parser/*.c signals.c
 
 OBJS = $(SRCS:.c = .o)
 
 
-CC = gcc ${SRCS}
+CC = gcc -g ${SRCS}
 
 all:	$(NAME)
 			./minishell

@@ -1,121 +1,176 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/11/04 21:54:35 by mtriston          #+#    #+#             */
+/*   Updated: 2020/11/07 14:35:10 by kdahl            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-int		launch_executable(char **args, char **envp)
+int		(*launch_builtin(int i))(t_cmd *cmd, char **envp)
 {
-	char path[PATH_MAX];
-	pid_t pid;
-	pid_t wpid;
-	int status;
-
-	if (args[0][0] == '.')
-	{
-		getcwd(path, PATH_MAX);
-		ft_strlcat(path, "/", PATH_MAX);
-		ft_strlcat(path, args[0] + 2, PATH_MAX);
-	}
-	else
-		ft_strlcpy(path, args[0], PATH_MAX);
-	pid = fork();
-	if (pid < 0)
-		perror("fork error");
-	else if (pid == 0)
-	{
-		if (execve(path, args, envp) == -1)
-		{
-			ft_putstr_fd("minishell: ", 1);
-			ft_putstr_fd(path, 1);
-			ft_putendl_fd(": No such file or directory", 1);
-		}
-	}
-	else
-	{
-		wpid = waitpid(pid, &status, WUNTRACED);
-		while (!WIFEXITED(status) && !WIFSIGNALED(status))
-			wpid = waitpid(pid, &status, WUNTRACED);
-	}
-	return (1);
-}
-
-int		(*launch_builtin(int i))(char **args, char **envp)
-{
-	int (*launch_builtin[BUILTIN_NUM])(char **args, char **envp);
+	int (*launch_builtin[BUILTIN_NUM])(t_cmd *cmd, char **envp);
 
 	launch_builtin[ECHO] = &cmd_echo;
 	launch_builtin[CD] = &cmd_cd;
 	launch_builtin[PWD] = &cmd_pwd;
 	launch_builtin[EXPORT] = &cmd_export;
-	//launch_builtin[UNSET] = &cmd_unset;
+	launch_builtin[UNSET] = &cmd_unset;
 	launch_builtin[ENV] = &cmd_env;
 	launch_builtin[EXIT] = &cmd_exit;
 	return (launch_builtin[i]);
 }
 
-/*
- *  TODO: заменить strncmp на strcmp для точной проверки на равенство.
- */
-
-int	execute(char *command, char **envp)
+int execute_cmd_in_child(t_cmd *cmd, char **envp)
 {
-	char	**args;
 	int		status;
 
-	args = split_line(command);
-	status = 1;
-	if (ft_strncmp(args[0], "echo,", 4) == 0)
-		status = launch_builtin(ECHO)(args, envp);
-	else if (ft_strncmp(args[0], "cd,", 2) == 0)
-		status = launch_builtin(CD)(args, envp);
-	else if (ft_strncmp(args[0], "pwd,", 3) == 0)
-		status = launch_builtin(PWD)(args, envp);
-	else if (ft_strncmp(args[0], "export,", 6) == 0)
-		status = launch_builtin(EXPORT)(args, envp);
-	else if (ft_strncmp(args[0], "unset,", 5) == 0)
-		status = launch_builtin(UNSET)(args, envp);
-	else if (ft_strncmp(args[0], "env,", 3) == 0)
-		status = launch_builtin(ENV)(args, envp);
-	else if (ft_strncmp(args[0], "exit,", 4) == 0)
-		status = launch_builtin(EXIT)(args, envp);
+	status = SUCCESS;
+	if (ft_strcmp(cmd->name, "echo") == 0)
+		status = launch_builtin(ECHO)(cmd, envp);
+	else if (ft_strcmp(cmd->name, "cd") == 0)
+		status = launch_builtin(CD)(cmd, envp);
+	else if (ft_strcmp(cmd->name, "pwd") == 0)
+		status = launch_builtin(PWD)(cmd, envp);
+	else if (ft_strcmp(cmd->name, "export") == 0)
+		status = launch_builtin(EXPORT)(cmd, envp);
+	else if (ft_strcmp(cmd->name, "unset") == 0)
+		status = launch_builtin(UNSET)(cmd, envp);
+	else if (ft_strcmp(cmd->name, "env") == 0)
+		status = launch_builtin(ENV)(cmd, envp);
+	else if (ft_strcmp(cmd->name, "exit") == 0)
+		status = launch_builtin(EXIT)(cmd, envp);
 	else
-		status = launch_executable(args, envp);
+		status = launch_executable(cmd, envp);
 	return (status);
 }
 
-static void print_prompt()
+void wait_child(pid_t pid, int *status)
 {
-	char buf[200];
+	pid_t wpid;
 
-	getcwd(buf, 200);
-	ft_putstr_fd("\033[1m \033[31m minishell:", 1);
-	ft_putstr_fd(buf, 1);
+	while (1)
+	{
+		wpid = waitpid(pid, status, WUNTRACED);
+		if (wpid >= 0)
+			break;
+	}
+}
+
+int	execute_cmd(t_cmd *cmd, char **envp, t_exec exec)
+{
+	exec.pid = fork();
+	if (exec.pid < 0)
+		exit(EXIT_FAILURE);
+	if (exec.pid == 0)
+	{
+		if (cmd->out != 1)
+			exec.fd_out = cmd->out;
+		if (cmd->in != 0)
+			exec.fd_in = cmd->in;
+		dup2(exec.fd_in, 0);
+		dup2(exec.fd_out, 1);
+		exec.status = execute_cmd_in_child(cmd, envp);
+		exit(exec.status);
+	}
+	if (exec.pid > 0)
+	{
+		wait_child(exec.pid, &exec.status);
+	}
+
+	return (1);
+	// всегда 1, не будет работать exit. костыль,
+	// т.к. не сделана нормальная обработка статусов
+}
+
+static int	execute_line(char *cmd_line, char **env)
+{
+	t_cmd	*cmd;
+	t_exec 	exec;
+
+	exec.status = SUCCESS;
+	exec.fd_out = 1;
+	exec.fd_in = 0;
+	while (*cmd_line)
+	{
+		cmd = NULL;
+		cmd_line = parse_next_cmd(cmd_line, &cmd, env);
+		while (cmd)
+		{
+			if (cmd->next)
+			{
+				pipe(exec.fd_pipe);
+				exec.fd_out = exec.fd_pipe[1];
+				exec.status = execute_cmd(cmd, env, exec);
+				close(exec.fd_pipe[1]);
+				exec.fd_in = exec.fd_pipe[0];
+				exec.fd_out = 1;
+			}
+			else
+			{
+				exec.status = execute_cmd(cmd, env, exec);
+				exec.fd_in = 0;
+			}
+			cmd = cmd->next;
+		}
+//		destroy_cmd(&cmd);
+	}
+	return (exec.status);
+}
+
+static void print_prompt(char **envp)
+{
+	char	*path;
+	char	*home;
+	int 	home_len;
+
+	path = getcwd(NULL, 0);
+	home = ft_getenv("HOME", envp);
+	home_len = ft_strlen(home);
+	ft_putstr_fd("\033[1m \033[31m ", 1);
+	ft_putstr_fd(ft_getenv("USERNAME", envp), 1);
+	ft_putstr_fd(":", 1);
+	if (ft_strncmp(path, home, home_len) == 0)
+	{
+		ft_putstr_fd("~", 1);
+		ft_putstr_fd(path + home_len, 1);
+	}
+	else
+		ft_putstr_fd(path, 1);
 	ft_putstr_fd("$ \033[0m", 1);
+	free(path);
 }
 
 void		shell_loop(char **envp)
 {
-	char	*line;
-	char	**commands;
-	int		status;
+	char 	*cmd_line;
+	int 	status;
+	t_sig	sig;
 
-	status = 1;
-	while (status)
+	status = SUCCESS;
+	while (status == SUCCESS)
 	{
-		print_prompt();
-		get_next_line(0, &line);
-		commands = ft_split(line, ';');
-		while (status && commands && *commands)
-		{
-			status = execute(*commands, envp);
-			commands++;
-		}
-		free_gc(NULL);
-		line = NULL;
+		sig = signal_init();
+		cmd_line = NULL;
+		print_prompt(envp);
+		cmd_line = read_line();
+		if (!cmd_line)
+			continue;
+		status = execute_line(cmd_line, envp);
+		free_gc(cmd_line);
 	}
-	free_gc(line);
+	free_gc(NULL);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
+	signal(SIGINT, &signal_int);
+	signal(SIGINT, &signal_quit);
 	shell_loop(envp);
-
 	return(0);
 }

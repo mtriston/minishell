@@ -1,78 +1,75 @@
 #include "minishell.h"
 
-static char *search_env(char *arg, char **envp)
+char *ft_getenv(char *arg, char **envp)
 {
-	char *temp;
-
 	while (*envp)
 	{
-		if ((temp = ft_strnstr(*envp, arg, ft_strlen(*envp))))
-		{
-			return (temp + ft_strlen(arg) + 1);
-		}
+		if (ft_strncmp(*envp, arg, ft_found(*envp, '=')) == 0)
+			return (*envp + ft_strlen(arg) + 1);
 		envp++;
 	}
 	return ("");
 }
 
-int cmd_echo(char **args, char **envp)
+int cmd_echo(t_cmd *cmd, char **envp)
 {
-	if (args[1] == NULL)
-		ft_putstr_fd("\n", 1);
-	else if (ft_strncmp(args[1], "-n", 2) == 0)
-		ft_putstr_fd(args[2], 1);
-	else
+	//TODO: Сейчас работает неверно из-за недоделанного парсера
+	int		n_flag;
+	size_t	i;
+
+	n_flag = 0;
+	i = 0;
+	if (cmd->args[0] != NULL)
 	{
-		while (*++args)
+		if (ft_strncmp(cmd->args[0], "-n", 2) == 0)
+			n_flag = 1;
+		while (cmd->args[++i])
 		{
-			if (*args[0] == '$')
-				*args = search_env(*args + 1, envp);
-			ft_putstr_fd(*args, 1);
-			if (*args + 1 != NULL)
+			ft_putstr_fd(cmd->args[i], 1);
+			if (cmd->args[i + 1] != NULL)
 				ft_putstr_fd(" ", 1);
 		}
-		ft_putstr_fd("\n", 1);
+		if (!n_flag)
+			ft_putstr_fd("\n", 1);
 	}
 		return(1);
 }
 
-int cmd_cd(char **args, char **envp)
+int cmd_cd(t_cmd *cmd, char **envp)
 {
-	char *home_dir;
+	char *dir;
 
-	if (args[1] == NULL)
-		chdir(search_env("HOME", envp));
+	if (cmd->args[1] == NULL)
+		dir = ft_getenv("HOME", envp);
 	else
-		if (chdir(args[1]) != 0)
-			ft_putendl_fd("No such directory", 1);
+		dir = cmd->args[1];
+	if (chdir(dir) != 0)
+		ft_perror(NULL);
+	//cmd_export("PWD", getcwd(NULL, 0), envp);
 	return (1);
 }
 
-int	cmd_env(char **args, char **envp)
+int	cmd_env(t_cmd *cmd, char **envp)
 {
-	// Не обновляет окружени при переходе в другие папки
-
 	while (*envp)
 	{
-		ft_putstr_fd(*envp, 1);
-		write(1, "\n", 1);
+		ft_putendl_fd(*envp, 1);
 		envp++;
 	}
 	return (1);
 }
 
-int	cmd_exit(char **args, char **envp)
+int	cmd_exit(t_cmd *cmd, char **envp)
 {
-	exit(0);
-	return (0);
+	free_gc(NULL);
+	return (1);
 }
 
-int	cmd_pwd(char **args, char **envp)
+int	cmd_pwd(t_cmd *cmd, char **envp)
 {
-	char buf[200];
+	char buf[PATH_MAX];
 
-	getcwd(buf, 200);
-	ft_putstr_fd(buf, 1);
-	write(1, "\n", 1);
+	getcwd(buf, PATH_MAX);
+	printf("%s\n", buf);
 	return (1);
 }
