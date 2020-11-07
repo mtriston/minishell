@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:22 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/29 21:47:02 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 13:16:21 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,13 +59,14 @@ static int	check_end(char *line)
 
 static int		check_next_char(char c, char *line)
 {
-	char *spec_tokens = ";|<>";
 	if (c == ';' && *line == ';')
 		return (syntax_error(";;"));
 	if (c == '>' && *line == '<')
 		return (syntax_error("<"));
 	if (c == '<' && *line == '>')
 		return (syntax_error(">"));
+	if (c == '>' && *(++line) == '>')
+		return (VALID_LINE);
 	while (ft_isspace(*line))
 		line++;
 	if ((c == '>' || c == '<') && *line == '>')

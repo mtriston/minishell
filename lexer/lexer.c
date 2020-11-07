@@ -63,7 +63,7 @@ void 		handle_redirect(char **line, t_token **token, int data_size)
 		*token = token_init(data_size, token);
 	(*token)->type = TYPE_SPECIAL;
 	(*token)->data[0] = **line;
-	if ((**line == '>' || **line == '<') && **line == *((*line) + 1))
+	if (**line == '>' && **line == *((*line) + 1))
 		(*token)->data[1] = *++*line;
 	*token = token_init(data_size, token);
 	*line += 1;

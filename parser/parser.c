@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/19 22:16:56 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 13:10:06 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 13:37:42 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,11 @@ static int		search_separator(const char *line)
 	return (i);
 }
 
-int 		is_there_redirect(t_token *list, char *token)
+int 		is_there_redirect(t_token *list, char token)
 {
 	while (list)
 	{
-		if (list->type == TYPE_SPECIAL && (ft_strcmp(token, list->data) == 0))
+		if (list->type == TYPE_SPECIAL && (list->data[0] == token))
 			return (1);
 		list = list->next;
 	}
@@ -56,7 +56,7 @@ int 		parse_redirect_in(t_token **tokens, int fd)
 	t_token	*ptr;
 
 	ptr = *tokens;
-	if (!is_there_redirect(*tokens, "<"))
+	if (!is_there_redirect(*tokens, '<'))
 		return (fd);
 	while (ptr)
 	{
@@ -86,17 +86,19 @@ int				parse_redirect_out(t_token **tokens, int fd)
 	t_token	*ptr;
 
 	ptr = *tokens;
-	if (!is_there_redirect(*tokens, ">"))
+	if (!is_there_redirect(*tokens, '>'))
 		return (fd);
 	while (ptr)
 	{
-		if (ptr->type == TYPE_SPECIAL && (ft_strcmp(ptr->data, ">") == 0))
+		if (ptr->type == TYPE_SPECIAL && (ptr->data[0] == '>'))
 		{
-			if (ptr->next)
-			{
+			if (ptr->next) {
 				if (fd != 1)
 					close(fd);
-				fd = open(ptr->next->data, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
+				if (ptr->data[1] == '>')
+					fd = open(ptr->next->data, O_CREAT | O_WRONLY | O_APPEND, S_IRWXU);
+				else
+					fd = open(ptr->next->data, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
 			}
 			fd = fd > 1 ? fd : 1;
 			remove_token(tokens, ptr->next);
