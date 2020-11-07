@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/10 20:30:29 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 16:00:27 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 18:32:42 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,9 @@ static char *find_command(char *cmd, char **envp)
 
 int		launch_executable(t_cmd *cmd, char **envp)
 {
-	int		status;
 	char	path[PATH_MAX];
-	pid_t	pid;
 
+	ft_bzero(path, PATH_MAX);
 	if (cmd->name[0] == '.' && cmd->name[1] == '/') {
 		getcwd(path, PATH_MAX);
 		ft_strlcat(path, cmd->name + 1, PATH_MAX);
@@ -51,7 +50,7 @@ int		launch_executable(t_cmd *cmd, char **envp)
 		ft_strlcat(path, "/", PATH_MAX);
 		ft_strlcat(path, cmd->name, PATH_MAX);
 	}
-	status = execve(path, cmd->args, envp);
+	execve(path, cmd->args, envp);
 	ft_putstr_fd(cmd->name, 2);
 	ft_putendl_fd(": command not found", 2);
 	exit(127);
