@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 20:15:32 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/07 16:43:46 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 16:58:05 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,6 @@ int		syntax_error(char *token);
 char 		*parse_next_cmd(char *cmd_line, t_cmd **cmd, char **env);
 int			cmd_export(t_cmd *cmd, char **envp);
 int			cmd_unset(t_cmd *cmd, char **envp);
-int			ft_found(char *str, char c);
+int			ft_found(const char *str, char c);
 int			envp_len(char **envp);
 #endif

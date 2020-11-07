@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:23:39 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/31 15:02:24 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 17:36:01 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,11 @@ static char	*handle_env_var(char *line, char **envp)
 	line = line + is_there_spec(line, '$');
 	*line = '\0';
 	line++;
-	while (line[i] && ft_isalnum(line[i]))
+	if (ft_isdigit(line[i]) || line[i] == '?')
 		i++;
+	else
+		while (line[i] && ft_isalnum(line[i]))
+			i++;
 	variable = ft_substr(line, 0, i);
 	line += i;
 	temp = ft_strjoin(begin, ft_getenv(variable,envp));

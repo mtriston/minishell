@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/19 22:16:56 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 13:37:42 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 16:20:51 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,6 +162,7 @@ char 			*parse_next_cmd(char *cmd_line, t_cmd **cmd, char **env)
 		//TODO: добавить поддержку >>
 		if ((current_cmd->in = parse_redirect_in(&tokens, 0)) == -1)
 		{
+			g_env.status = 1;
 			current_cmd->in = 0;
 			continue;
 		}

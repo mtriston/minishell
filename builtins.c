@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/07 13:58:22 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 16:46:02 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 16:52:22 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 char *ft_getenv(char *arg, char **envp)
 {
+	if (ft_strcmp(arg, "?") == 0)
+		return (ft_itoa(g_env.status));
 	while (*envp)
 	{
 		if (ft_strncmp(*envp, arg, ft_found(*envp, '=')) == 0)
