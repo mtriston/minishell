@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/19 22:16:56 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/04 22:03:49 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 13:05:06 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,15 +62,18 @@ int 		parse_redirect_in(t_token **tokens, int fd)
 	{
 		if (ptr->type == TYPE_SPECIAL && (ft_strcmp(ptr->data, "<") == 0))
 		{
-			if (ptr->next)
-			{
+			if (ptr->next) {
 				if (fd != 0)
 					close(fd);
-				fd = open(ptr->next->data, O_RDONLY);
+				if ((fd = open(ptr->next->data, O_RDONLY)) < 0)
+				{
+					ft_perror(ptr->next->data);
+					return (-1);
+				}
 			}
 			fd = fd > 0 ? fd : 0;
-			remove_token(tokens, ptr);
 			remove_token(tokens, ptr->next);
+			remove_token(tokens, ptr);
 			break;
 		}
 		ptr = ptr->next;
@@ -96,8 +99,8 @@ int				parse_redirect_out(t_token **tokens, int fd)
 				fd = open(ptr->next->data, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
 			}
 			fd = fd > 1 ? fd : 1;
-			remove_token(tokens, ptr);
 			remove_token(tokens, ptr->next);
+			remove_token(tokens, ptr);
 			break;
 		}
 		ptr = ptr->next;
@@ -154,7 +157,12 @@ char 			*parse_next_cmd(char *cmd_line, t_cmd **cmd, char **env)
 	while (*splited_line)
 	{
 		tokens = lexer(*splited_line++, env);
-		current_cmd->in = parse_redirect_in(&tokens, 0);
+		//TODO: добавить поддержку >>
+		if ((current_cmd->in = parse_redirect_in(&tokens, 0)) == -1)
+		{
+			current_cmd->in = 0;
+			continue;
+		}
 		current_cmd->out = parse_redirect_out(&tokens, 1);
 		current_cmd->name = parse_cmd_name(&tokens);
 		current_cmd->args = parse_cmd_args(&tokens);
