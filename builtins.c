@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtins.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/11/07 13:58:22 by mtriston          #+#    #+#             */
+/*   Updated: 2020/11/07 14:32:21 by mtriston         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 char *ft_getenv(char *arg, char **envp)
@@ -13,7 +25,6 @@ char *ft_getenv(char *arg, char **envp)
 
 int cmd_echo(t_cmd *cmd, char **envp)
 {
-	//TODO: Сейчас работает неверно из-за недоделанного парсера
 	int		n_flag;
 	size_t	i;
 
@@ -32,7 +43,7 @@ int cmd_echo(t_cmd *cmd, char **envp)
 		if (!n_flag)
 			ft_putstr_fd("\n", 1);
 	}
-		return(1);
+		return(SUCCESS);
 }
 
 int cmd_cd(t_cmd *cmd, char **envp)
@@ -44,9 +55,12 @@ int cmd_cd(t_cmd *cmd, char **envp)
 	else
 		dir = cmd->args[1];
 	if (chdir(dir) != 0)
-		ft_perror(NULL);
+	{
+		ft_perror("cd");
+		return (FAILURE);
+	}
 	//cmd_export("PWD", getcwd(NULL, 0), envp);
-	return (1);
+	return (SUCCESS);
 }
 
 int	cmd_env(t_cmd *cmd, char **envp)
@@ -56,13 +70,20 @@ int	cmd_env(t_cmd *cmd, char **envp)
 		ft_putendl_fd(*envp, 1);
 		envp++;
 	}
-	return (1);
+	return (SUCCESS);
 }
 
 int	cmd_exit(t_cmd *cmd, char **envp)
 {
+	int status;
+
+	if (cmd->args[1])
+		status = ft_atoi(cmd->args[1]);
+	else
+		status = 0;
 	free_gc(NULL);
-	return (1);
+	return (status);
+	// Добавить выход
 }
 
 int	cmd_pwd(t_cmd *cmd, char **envp)
@@ -70,6 +91,6 @@ int	cmd_pwd(t_cmd *cmd, char **envp)
 	char buf[PATH_MAX];
 
 	getcwd(buf, PATH_MAX);
-	printf("%s\n", buf);
-	return (1);
+	ft_putendl_fd(buf, 1);
+	return (SUCCESS);
 }

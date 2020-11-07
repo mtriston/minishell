@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 20:15:32 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/04 21:59:07 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 14:42:11 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@
 # include <limits.h>
 # include "libft/libft.h"
 
-# define FAILURE 0
-# define SUCCESS 1
+# define FAILURE 1
+# define SUCCESS 0
 
 # define BUILTIN_NUM 7
 # define ECHO 0
@@ -43,8 +43,6 @@ typedef struct s_exec
 	int			fd_in;
 	int			fd_out;
 	int			fd_pipe[2];
-	pid_t		pid;
-	int			status;
 }				t_exec;
 
 typedef struct		s_token
@@ -63,6 +61,15 @@ typedef struct		s_cmd
 	struct s_cmd	*next;
 	struct s_cmd	*prev;
 }					t_cmd;
+
+typedef struct		s_env
+{
+	char 			**env;
+	int 			status;
+	pid_t			pid;
+	int 			sigint;
+	int 			sigquit;
+}					t_env;
 
 int		main(int argc, char **argv, char **envp);
 char    **split_line(char const *s);
