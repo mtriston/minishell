@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 21:54:35 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 16:45:36 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 18:07:48 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "minishell.h"
@@ -65,6 +65,11 @@ static void	execute_cmd(t_cmd *cmd, t_exec exec)
 {
 	if (ft_strcmp(cmd->name, "exit") == 0)
 		launch_builtin(EXIT)(cmd, g_env.env);
+	if (ft_strcmp(cmd->name, "cd") == 0)
+	{
+		launch_builtin(CD)(cmd, g_env.env);
+		return ;
+	}
 	g_env.pid = fork();
 	if (g_env.pid < 0)
 		exit(EXIT_FAILURE);
@@ -157,11 +162,32 @@ _Noreturn void		shell_loop()
 	free_gc(NULL);
 }
 
-int		main(int argc, char **argv, char **envp)
+void 	env_init(char **env)
 {
-	g_env.env = envp;
+	size_t i;
+
+	i = 0;
 	g_env.status = 0;
 	g_env.pid = 0;
+	g_env.sigquit = 0;
+	g_env.sigint = 0;
+	g_env.env = malloc((envp_len(env) + 1) * sizeof(char *));
+	if (!g_env.env)
+		exit(EXIT_FAILURE);
+	while (env[i])
+	{
+		g_env.env[i] = (char *)malloc((ft_strlen(env[i]) + 1) * sizeof(char));
+		if (!g_env.env[i])
+			exit(EXIT_FAILURE);
+		ft_strcpy(g_env.env[i], env[i]);
+		i++;
+	}
+	g_env.env[i] = NULL;
+}
+
+int		main(int argc, char **argv, char **envp)
+{
+	env_init(envp);
 	shell_loop();
 	return (0);
 }

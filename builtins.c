@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/07 13:58:22 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 16:52:22 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 18:11:03 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,18 @@ int cmd_cd(t_cmd *cmd, char **envp)
 {
 	char *dir;
 
+	if (envp_len(cmd->args) > 2)
+	{
+		ft_perror("cd: too many arguments");
+		return (FAILURE);
+	}
 	if (cmd->args[1] == NULL)
 		dir = ft_getenv("HOME", envp);
+	else if (ft_strcmp(cmd->args[1], "-") == 0)
+	{
+		dir = ft_getenv("HOME", envp);
+		cmd_pwd(cmd, envp);
+	}
 	else
 		dir = cmd->args[1];
 	if (chdir(dir) != 0)
