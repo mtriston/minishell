@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/07 13:58:22 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 14:32:21 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 16:46:02 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,8 +82,7 @@ int	cmd_exit(t_cmd *cmd, char **envp)
 	else
 		status = 0;
 	free_gc(NULL);
-	return (status);
-	// Добавить выход
+	exit(status);
 }
 
 int	cmd_pwd(t_cmd *cmd, char **envp)

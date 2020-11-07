@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 21:54:35 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 16:29:09 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 16:45:36 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "minishell.h"
@@ -42,8 +42,6 @@ int execute_cmd_in_child(t_cmd *cmd, char **envp)
 		g_env.status = launch_builtin(UNSET)(cmd, envp);
 	else if (ft_strcmp(cmd->name, "env") == 0)
 		g_env.status = launch_builtin(ENV)(cmd, envp);
-	else if (ft_strcmp(cmd->name, "exit") == 0)
-		g_env.status = launch_builtin(EXIT)(cmd, envp);
 	else
 		launch_executable(cmd, envp);
 	return (g_env.status);
@@ -65,6 +63,8 @@ void wait_child(pid_t pid)
 
 static void	execute_cmd(t_cmd *cmd, t_exec exec)
 {
+	if (ft_strcmp(cmd->name, "exit") == 0)
+		launch_builtin(EXIT)(cmd, g_env.env);
 	g_env.pid = fork();
 	if (g_env.pid < 0)
 		exit(EXIT_FAILURE);
@@ -140,11 +140,11 @@ static void print_prompt()
 	free(path);
 }
 
-void		shell_loop()
+_Noreturn void		shell_loop()
 {
 	char 	*cmd_line;
 
-	while (g_env.status >= 0)
+	while (1)
 	{
 		cmd_line = NULL;
 		print_prompt();
@@ -163,5 +163,5 @@ int		main(int argc, char **argv, char **envp)
 	g_env.status = 0;
 	g_env.pid = 0;
 	shell_loop();
-	return(0);
+	return (0);
 }
