@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:23:39 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 17:36:01 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 18:40:02 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ static char	*handle_env_var(char *line, char **envp)
 			i++;
 	variable = ft_substr(line, 0, i);
 	line += i;
-	temp = ft_strjoin(begin, ft_getenv(variable,envp));
+	temp = ft_strjoin(begin, ft_getenv(variable, envp));
 	variable = temp;
 	temp = ft_strjoin(variable, line);
 	free_gc(variable);
@@ -68,15 +68,12 @@ static char	*handle_env_var(char *line, char **envp)
 	return (handle_env_var(temp, envp));
 }
 
-static char *handle_tilda(char *line, char **envp)
+static char	*handle_tilda(char *line, char **envp)
 {
-
 	char	*begin;
 	char	*home_dir;
 	char	*temp;
-	size_t	i;
 
-	i = 0;
 	if (is_there_spec(line, '~') < 0)
 		return (line);
 	begin = line;
