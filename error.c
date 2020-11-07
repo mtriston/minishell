@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/10 21:25:42 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 13:06:55 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 15:36:17 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,9 @@ int		syntax_error(char *token)
 	return (2);
 }
 
-void	ft_perror(char *s)
-{
+void	ft_perror(char *s);
+
+void ft_perror(char *s) {
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(s, 2);
 	if (errno != 0)

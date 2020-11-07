@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 20:15:32 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/07 14:42:11 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 15:22:37 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,8 @@ typedef struct		s_env
 	int 			sigint;
 	int 			sigquit;
 }					t_env;
+
+t_env	g_env;
 
 int		main(int argc, char **argv, char **envp);
 char    **split_line(char const *s);

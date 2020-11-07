@@ -6,12 +6,10 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 21:54:35 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 15:14:02 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 16:29:09 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "minishell.h"
-
-t_env	g_env;
 
 int		(*launch_builtin(int i))(t_cmd *cmd, char **envp)
 {
@@ -29,44 +27,45 @@ int		(*launch_builtin(int i))(t_cmd *cmd, char **envp)
 
 int execute_cmd_in_child(t_cmd *cmd, char **envp)
 {
-	int		status;
-
-	status = SUCCESS;
+	g_env.status = SUCCESS;
+	if (cmd->name == NULL)
+		return (FAILURE);
 	if (ft_strcmp(cmd->name, "echo") == 0)
-		status = launch_builtin(ECHO)(cmd, envp);
+		g_env.status = launch_builtin(ECHO)(cmd, envp);
 	else if (ft_strcmp(cmd->name, "cd") == 0)
-		status = launch_builtin(CD)(cmd, envp);
+		g_env.status = launch_builtin(CD)(cmd, envp);
 	else if (ft_strcmp(cmd->name, "pwd") == 0)
-		status = launch_builtin(PWD)(cmd, envp);
+		g_env.status = launch_builtin(PWD)(cmd, envp);
 	else if (ft_strcmp(cmd->name, "export") == 0)
-		status = launch_builtin(EXPORT)(cmd, envp);
+		g_env.status = launch_builtin(EXPORT)(cmd, envp);
 	else if (ft_strcmp(cmd->name, "unset") == 0)
-		status = launch_builtin(UNSET)(cmd, envp);
+		g_env.status = launch_builtin(UNSET)(cmd, envp);
 	else if (ft_strcmp(cmd->name, "env") == 0)
-		status = launch_builtin(ENV)(cmd, envp);
+		g_env.status = launch_builtin(ENV)(cmd, envp);
 	else if (ft_strcmp(cmd->name, "exit") == 0)
-		status = launch_builtin(EXIT)(cmd, envp);
+		g_env.status = launch_builtin(EXIT)(cmd, envp);
 	else
-		status = launch_executable(cmd, envp);
-	return (status);
+		launch_executable(cmd, envp);
+	return (g_env.status);
 }
 
-void wait_child(pid_t pid, int *status)
+void wait_child(pid_t pid)
 {
 	pid_t wpid;
 
 	while (1)
 	{
-		wpid = waitpid(pid, status, WUNTRACED);
+		wpid = waitpid(pid, &g_env.status, WUNTRACED);
 		if (wpid >= 0)
 			break;
 	}
+	if (WIFEXITED(g_env.status))
+		g_env.status = WEXITSTATUS(g_env.status);
 }
 
-int	execute_cmd(t_cmd *cmd, t_exec exec)
+static void	execute_cmd(t_cmd *cmd, t_exec exec)
 {
 	g_env.pid = fork();
-	printf("%d\n", g_env.pid);
 	if (g_env.pid < 0)
 		exit(EXIT_FAILURE);
 	if (g_env.pid == 0)
@@ -81,16 +80,10 @@ int	execute_cmd(t_cmd *cmd, t_exec exec)
 		exit(g_env.status);
 	}
 	if (g_env.pid > 0)
-	{
-		wait_child(g_env.pid, &g_env.status);
-	}
-
-	return (1);
-	// всегда 1, не будет работать exit. костыль,
-	// т.к. не сделана нормальная обработка статусов
+		wait_child(g_env.pid);
 }
 
-static int	execute_line(char *cmd_line)
+static void	execute_line(char *cmd_line)
 {
 	t_cmd	*cmd;
 	t_exec 	exec;
@@ -107,23 +100,21 @@ static int	execute_line(char *cmd_line)
 			{
 				pipe(exec.fd_pipe);
 				exec.fd_out = exec.fd_pipe[1];
-				g_env.status = execute_cmd(cmd,exec);
+				execute_cmd(cmd,exec);
 				close(exec.fd_pipe[1]);
 				exec.fd_in = exec.fd_pipe[0];
 				exec.fd_out = 1;
 			}
 			else
 			{
-				g_env.status = execute_cmd(cmd, exec);
+				execute_cmd(cmd, exec);
 				exec.fd_in = 0;
 			}
-			printf("status %d\n", g_env.status);
 			g_env.pid = 0;
 			cmd = cmd->next;
 		}
 //		destroy_cmd(&cmd);
 	}
-	return (SUCCESS);
 }
 
 static void print_prompt()
@@ -152,17 +143,15 @@ static void print_prompt()
 void		shell_loop()
 {
 	char 	*cmd_line;
-	int 	status;
 
-	status = SUCCESS;
-	while (status == SUCCESS)
+	while (g_env.status >= 0)
 	{
 		cmd_line = NULL;
 		print_prompt();
 		cmd_line = read_line();
 		if (!cmd_line)
 			continue;
-		status = execute_line(cmd_line);
+		execute_line(cmd_line);
 		free_gc(cmd_line);
 	}
 	free_gc(NULL);
@@ -171,7 +160,8 @@ void		shell_loop()
 int		main(int argc, char **argv, char **envp)
 {
 	g_env.env = envp;
-
+	g_env.status = 0;
+	g_env.pid = 0;
 	shell_loop();
 	return(0);
 }

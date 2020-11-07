@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/10 20:30:29 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/04 18:59:32 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 16:00:27 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,23 +37,22 @@ static char *find_command(char *cmd, char **envp)
 
 int		launch_executable(t_cmd *cmd, char **envp)
 {
-	char path[PATH_MAX];
-	pid_t pid;
+	int		status;
+	char	path[PATH_MAX];
+	pid_t	pid;
 
-	if (cmd->name[0] == '.' && cmd->name[1] == '/')
-	{
+	if (cmd->name[0] == '.' && cmd->name[1] == '/') {
 		getcwd(path, PATH_MAX);
 		ft_strlcat(path, cmd->name + 1, PATH_MAX);
-	}
-	else if (cmd->name[0] == '/')
+	} else if (cmd->name[0] == '/')
 		ft_strlcpy(path, cmd->name, PATH_MAX);
-	else
-	{
+	else {
 		ft_strlcpy(path, find_command(cmd->name, envp), PATH_MAX);
 		ft_strlcat(path, "/", PATH_MAX);
 		ft_strlcat(path, cmd->name, PATH_MAX);
 	}
-	if (execve(path, cmd->args, envp) == -1)
-		ft_perror(NULL);
-	return (1);
+	status = execve(path, cmd->args, envp);
+	ft_putstr_fd(cmd->name, 2);
+	ft_putendl_fd(": command not found", 2);
+	exit(127);
 }
