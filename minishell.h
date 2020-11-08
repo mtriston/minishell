@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 20:15:32 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/07 16:58:05 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 18:58:30 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ typedef struct		s_cmd
 	int				in;
 	int 			out;
 	struct s_cmd	*next;
-	struct s_cmd	*prev;
 }					t_cmd;
 
 typedef struct		s_env
@@ -82,7 +81,7 @@ int		cmd_cd(t_cmd *cmd, char **envp);
 int		cmd_exit(t_cmd *cmd, char **envp);
 int		cmd_pwd(t_cmd *cmd, char **envp);
 int		cmd_env(t_cmd *cmd, char **envp);
-void	ft_perror(char *s);
+int		ft_perror(char *s, int code);
 char	*read_line();
 int		syntax_error(char *token);
 char 		*parse_next_cmd(char *cmd_line, t_cmd **cmd, char **env);

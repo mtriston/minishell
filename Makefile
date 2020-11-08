@@ -17,7 +17,7 @@ SRCS = main.c builtins.c exec.c error.c export.c unset.c lexer/*.c parser/*.c
 OBJS = $(SRCS:.c = .o)
 
 
-CC = gcc -g ${SRCS}
+CC = gcc -g ${SRCS} -Wall -Wextra -Werror
 
 all:	$(NAME)
 			./minishell

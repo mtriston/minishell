@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/19 22:16:56 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/08 15:05:10 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/08 15:05:57 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ char		*parse_next_cmd(char *cmd_line, t_cmd **cmd, char **env)
 
 	current_cmd = cmd_init(cmd);
 	current_line = cmd_line;
-	i = search_separator(cmd_line);
+	i = search_separator(cmd_line, ';');
 	if (cmd_line[i])
 		cmd_line[i++] = '\0';
 	splited_line = split_pipe(current_line);
