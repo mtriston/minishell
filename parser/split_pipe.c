@@ -29,7 +29,7 @@ static int	count_words(char const *s)
 				if (s[i] == '\\')
 					i++;
 				else if (s[i] == '|')
-					break;
+					break ;
 				i++;
 			}
 		}
@@ -48,7 +48,7 @@ static int	count_len(char const *str)
 		if (str[i] == '\\')
 			i++;
 		else if (str[i] == '|')
-			break;
+			break ;
 		i++;
 	}
 	return (i);
@@ -65,7 +65,7 @@ void		*tab_free_gc(char **tab)
 	return (NULL);
 }
 
-char 		**split_pipe(char *s)
+char		**split_pipe(char *s)
 {
 	int		i;
 	int		j;
