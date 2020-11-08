@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:29:36 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/08 18:01:45 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/08 18:24:42 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,10 @@ static int	count_words(char *s)
 	count = 0;
 	while (s && *s)
 	{
-		i = search_separator(&s[i], '|');
+		i = search_separator(s, '|');
 		s = s + i;
+		if (*s)
+			s++;
 		count++;
 	}
 	return (count);
