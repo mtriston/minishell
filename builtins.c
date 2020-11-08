@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/07 13:58:22 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 18:19:59 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/08 14:46:13 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int cmd_echo(t_cmd *cmd, char **envp)
 	i = 0;
 	if (cmd->args[0] != NULL)
 	{
-		if (ft_strncmp(cmd->args[0], "-n", 2) == 0)
+		if (ft_strncmp(cmd->args[1], "-n", 2) == 0)
 			n_flag = 1;
 		while (cmd->args[++i])
 		{
