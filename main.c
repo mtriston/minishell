@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 21:54:35 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 18:07:48 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/08 15:45:03 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "minishell.h"
@@ -88,6 +88,26 @@ static void	execute_cmd(t_cmd *cmd, t_exec exec)
 		wait_child(g_env.pid);
 }
 
+static void destroy_cmd(t_cmd **lst)
+{
+	t_cmd *ptr;
+	t_cmd *temp;
+
+	if (lst && *lst)
+	{
+		ptr = *lst;
+		while (ptr)
+		{
+			temp = ptr;
+			ptr = ptr->next;
+			free_gc(temp->name);
+			free_gc(temp->next);
+			ft_free_array(temp->args, free_gc);
+		}
+		*lst = NULL;
+	}
+}
+
 static void	execute_line(char *cmd_line)
 {
 	t_cmd	*cmd;
@@ -118,7 +138,7 @@ static void	execute_line(char *cmd_line)
 			g_env.pid = 0;
 			cmd = cmd->next;
 		}
-//		destroy_cmd(&cmd);
+		destroy_cmd(&cmd);
 	}
 }
 
@@ -187,6 +207,8 @@ void 	env_init(char **env)
 
 int		main(int argc, char **argv, char **envp)
 {
+	(void)argc;
+	(void)argv;
 	env_init(envp);
 	shell_loop();
 	return (0);
