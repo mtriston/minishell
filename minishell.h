@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 20:15:32 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/07 14:30:08 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/11/07 15:07:39 by kdahl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ int			cmd_export(t_cmd *cmd, char **envp);
 int			cmd_unset(t_cmd *cmd, char **envp);
 int			ft_found(char *str, char c);
 int			envp_len(char **envp);
-t_sig		signal_init(void);
+t_sig		signal_init(t_exec exes);
 void		signal_quit(int code, t_sig *sig);
 void		signal_int(int code, t_sig *sig);
 #endif

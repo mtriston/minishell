@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 21:54:35 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 14:35:10 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/11/07 15:08:13 by kdahl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,10 @@ void wait_child(pid_t pid, int *status)
 
 int	execute_cmd(t_cmd *cmd, char **envp, t_exec exec)
 {
+	t_sig	sig;
+	
 	exec.pid = fork();
+	sig = signal_init(exec);
 	if (exec.pid < 0)
 		exit(EXIT_FAILURE);
 	if (exec.pid == 0)
@@ -82,7 +85,8 @@ int	execute_cmd(t_cmd *cmd, char **envp, t_exec exec)
 	{
 		wait_child(exec.pid, &exec.status);
 	}
-
+	if (sig.sigint == 1 || sig.sigquit == 1)
+		exit(EXIT_FAILURE);
 	return (1);
 	// всегда 1, не будет работать exit. костыль,
 	// т.к. не сделана нормальная обработка статусов
@@ -150,12 +154,10 @@ void		shell_loop(char **envp)
 {
 	char 	*cmd_line;
 	int 	status;
-	t_sig	sig;
 
 	status = SUCCESS;
 	while (status == SUCCESS)
 	{
-		sig = signal_init();
 		cmd_line = NULL;
 		print_prompt(envp);
 		cmd_line = read_line();
