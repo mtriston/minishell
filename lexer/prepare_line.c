@@ -86,7 +86,7 @@ static char	*handle_tilda(char *line, char **envp)
 	temp = ft_strjoin(home_dir, line);
 	free_gc(home_dir);
 	free_gc(line);
-	return (handle_env_var(temp, envp));
+	return (handle_tilda(temp, envp));
 }
 
 char		*prepare_line(char *line, char **envp)
