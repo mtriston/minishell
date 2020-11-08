@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/10 20:30:29 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 18:32:42 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/08 18:48:11 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,13 @@ int		launch_executable(t_cmd *cmd, char **envp)
 		ft_strlcat(path, cmd->name, PATH_MAX);
 	}
 	execve(path, cmd->args, envp);
-	ft_putstr_fd(cmd->name, 2);
-	ft_putendl_fd(": command not found", 2);
+	if (cmd->name[0] == '/' || (cmd->name[0] == '.' && cmd->name[1] == '/'))
+		ft_perror(cmd->name, 1);
+	else
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd->name, 2);
+		ft_putendl_fd(": command not found", 2);
+	}
 	exit(127);
 }
