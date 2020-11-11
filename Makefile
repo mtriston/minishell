@@ -12,7 +12,7 @@
 
 NAME = minishell
 
-SRCS = main.c builtins.c exec.c error.c export.c unset.c lexer/*.c parser/*.c
+SRCS = main.c builtins.c exec.c error.c export.c unset.c lexer/*.c parser/*.c signals.c
 
 OBJS = $(SRCS:.c = .o)
 

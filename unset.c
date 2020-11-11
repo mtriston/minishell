@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 22:21:25 by kdahl             #+#    #+#             */
-/*   Updated: 2020/10/27 18:20:10 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/11/11 18:57:04 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,14 @@ static void	delete_arg(char *arg, char **envp)
 
 	i = 0;
 	j = 0;
-	temp = ft_calloc(envp_len(envp), sizeof(char *));
+	temp = malloc(envp_len(envp) * sizeof(char *));
 	while (envp[i])
 	{
 		if (ft_strncmp(arg, envp[i], ft_found(envp[i], '=')) != 0)
 			temp[j++] = ft_strdup(envp[i]);
 		i++;
 	}
+	temp[j] = NULL;
 	g_env.env = temp;
 }
 
@@ -48,14 +49,23 @@ static int	pars_unset(char *str, char **envp)
 
 int     cmd_unset(t_cmd *cmd, char **envp)
 {
-    int     i;
+	int     i;
+	int 	status;
 
-    i = 0;
-    while (cmd->args[i])
-    {
-        if (pars_unset(cmd->args[i], envp))
-            delete_arg(cmd->args[i], envp);
-        i++;
-    }
-    return (1);
+	i = 0;
+	status = 0;
+	while (cmd->args[i])
+	{
+		if (is_valid_name(cmd->args[i]) == 0)
+		{
+			ft_putstr_fd("minishell: `", 2);
+			ft_putstr_fd(cmd->args[i], 2);
+			ft_putendl_fd("': not a valid identifier", 2);
+			status = 1;
+		}
+		else if (pars_unset(cmd->args[i], envp))
+			delete_arg(cmd->args[i], envp);
+		i++;
+	}
+	return (status);
 }

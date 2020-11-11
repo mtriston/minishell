@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 21:54:35 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/08 15:45:03 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/11 18:48:32 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "minishell.h"
@@ -59,6 +59,16 @@ void wait_child(pid_t pid)
 	}
 	if (WIFEXITED(g_env.status))
 		g_env.status = WEXITSTATUS(g_env.status);
+	if (g_env.sigint)
+	{
+		g_env.status = 130;
+		g_env.sigint = 0;
+	}
+	if (g_env.sigquit)
+	{
+		g_env.status = 131;
+		g_env.sigquit = 0;
+	}
 }
 
 static void	execute_cmd(t_cmd *cmd, t_exec exec)
@@ -67,17 +77,17 @@ static void	execute_cmd(t_cmd *cmd, t_exec exec)
 		launch_builtin(EXIT)(cmd, g_env.env);
 	if (ft_strcmp(cmd->name, "cd") == 0)
 	{
-		launch_builtin(CD)(cmd, g_env.env);
-		return ;
-	}
-	if (ft_strcmp(cmd->name, "unset") == 0)
-	{
-		launch_builtin(UNSET)(cmd, g_env.env);
+		g_env.status = launch_builtin(CD)(cmd, g_env.env);
 		return ;
 	}
 	if (ft_strcmp(cmd->name, "export") == 0 && cmd->args[1])
 	{
-		launch_builtin(EXPORT)(cmd, g_env.env);
+		g_env.status = launch_builtin(EXPORT)(cmd, g_env.env);
+		return ;
+	}
+	if (ft_strcmp(cmd->name, "unset") == 0)
+	{
+		g_env.status = launch_builtin(UNSET)(cmd, g_env.env);
 		return ;
 	}
 	g_env.pid = fork();
@@ -113,6 +123,7 @@ static void destroy_cmd(t_cmd **lst)
 			free_gc(temp->name);
 			free_gc(temp->next);
 			ft_free_array(temp->args, free_gc);
+			free_gc(temp);
 		}
 		*lst = NULL;
 	}
@@ -152,7 +163,7 @@ static void	execute_line(char *cmd_line)
 	}
 }
 
-static void print_prompt()
+void			print_prompt(void)
 {
 	char	*path;
 	char	*home;
@@ -219,6 +230,8 @@ int		main(int argc, char **argv, char **envp)
 {
 	(void)argc;
 	(void)argv;
+	signal(SIGINT, &signal_int);
+	signal(SIGQUIT, &signal_quit);
 	env_init(envp);
 	shell_loop();
 	return (0);
