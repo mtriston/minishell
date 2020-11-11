@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 20:15:32 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/11 18:46:05 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/11 19:38:02 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # include <unistd.h>
 # include <limits.h>
 # include "libft/libft.h"
+# include <signal.h>
 
 # define FAILURE 1
 # define SUCCESS 0
@@ -93,4 +94,5 @@ void				signal_quit(int code);
 void				signal_int(int code);
 int					is_valid_name(char *str);
 void				print_prompt(void);
+char 				*env_strdup(char *str);
 #endif

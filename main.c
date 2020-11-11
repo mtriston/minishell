@@ -6,9 +6,10 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 21:54:35 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/11 18:48:32 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/11 20:38:51 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "minishell.h"
 
 int		(*launch_builtin(int i))(t_cmd *cmd, char **envp)
@@ -186,7 +187,7 @@ void			print_prompt(void)
 	free(path);
 }
 
-_Noreturn void		shell_loop()
+void		shell_loop()
 {
 	char 	*cmd_line;
 
@@ -195,12 +196,11 @@ _Noreturn void		shell_loop()
 		cmd_line = NULL;
 		print_prompt();
 		cmd_line = read_line();
-		if (!cmd_line)
-			continue;
-		execute_line(cmd_line);
-		free_gc(cmd_line);
+		if (cmd_line != NULL) {
+			execute_line(cmd_line);
+			free_gc(cmd_line);
+		}
 	}
-	free_gc(NULL);
 }
 
 void 	env_init(char **env)

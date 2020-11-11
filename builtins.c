@@ -97,6 +97,7 @@ int	cmd_exit(t_cmd *cmd, char **envp)
 	else
 		status = 0;
 	free_gc(NULL);
+	ft_free_array(g_env.env, free);
 	exit(status);
 }
 
