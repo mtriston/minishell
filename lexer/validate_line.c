@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:22 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 18:49:59 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/11 20:47:49 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static int	quotes_are_closed(const char *line)
 	in_dquote = -1;
 	while (line[i])
 	{
-		if (line[i] == '\\')
+		if (line[i] == '\\' && in_quote == -1)
 			i++;
 		else if (line[i] == '\'' && in_dquote == -1)
 			in_quote *= -1;
