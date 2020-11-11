@@ -6,11 +6,21 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/09 19:40:18 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/11 19:25:06 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/12 00:19:34 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+char 		*env_strdup(char *str)
+{
+	char	*dest;
+
+	if (!(dest = (char *)malloc((ft_strlen(str) + 1) * sizeof(char))))
+		exit(EXIT_FAILURE);
+	dest = ft_strcpy(dest, str);
+	return (dest);
+}
 
 int				ft_found(const char *str, char c)
 {
@@ -28,9 +38,9 @@ int				envp_len(char **envp)
 {
 	int len;
 
-	len = -1;
-	while (envp[++len])
-		;
+	len = 0;
+	while (envp[len])
+		len++;
 	return (len);
 }
 
@@ -38,7 +48,6 @@ int		is_valid_name(char *str)
 {
 	if (!ft_isalpha(str[0]) && str[0] != '_')
 		return (0);
-	str++;
 	while (*str && *str != '=')
 	{
 		if (!ft_isalnum(*str) && *str != '_')
@@ -49,7 +58,7 @@ int		is_valid_name(char *str)
 	return (1);
 }
 
-void export_print_env(char **envp)
+void		export_print_env(char **envp)
 {
 	int i;
 	int j;
@@ -77,24 +86,6 @@ void export_print_env(char **envp)
 	}
 }
 
-int		sort_export(int i, int j, char **envp, t_cmd *cmd)
-{
-	char *temp;
-
-	while (envp[j])
-	{
-		if (ft_strncmp(cmd->args[i], envp[j], ft_found(cmd->args[i], '=') + 1) == 0)
-		{
-			temp = envp[j];
-			envp[j] = cmd->args[i];
-			free(temp);
-			break ;
-		}
-		j++;
-	}
-	return (i);
-}
-
 int cmd_export(t_cmd *cmd, char **envp)
 {
 	int i;
@@ -105,7 +96,8 @@ int cmd_export(t_cmd *cmd, char **envp)
 
 	i = 1;
 	status = 0;
-	if (!(cmd->args[1]))
+	tab = NULL;
+	if (cmd->args[1] == NULL)
 		export_print_env(envp);
 	else
 	{
@@ -113,7 +105,7 @@ int cmd_export(t_cmd *cmd, char **envp)
 		{
 			//export te дважды выоводит te
 			//export существующей переменной должен обновить ее значение
-			if (is_valid_name(cmd->args[i]) == 0)
+			if (!is_valid_name(cmd->args[i]) || !ft_strchr(cmd->args[i], '='))
 			{
 				ft_putstr_fd("export: `", 2);
 				ft_putstr_fd(cmd->args[i], 2);
@@ -123,18 +115,18 @@ int cmd_export(t_cmd *cmd, char **envp)
 			else
 			{
 				j = 0;
-				sort_export(i, j, envp, cmd);
 				k = 0;
 				j = 0;
-				tab = malloc((envp_len(envp) + 2) * sizeof(char *));
-				while (envp[k])
-					tab[j++] = envp[k++];
-				tab[j++] = cmd->args[i];
+				tab = malloc((envp_len(g_env.env) + 2) * sizeof(char *));
+				while (g_env.env[k])
+					tab[j++] = env_strdup(g_env.env[k++]);
+				tab[j++] = env_strdup(cmd->args[i]);
 				tab[j] = NULL;
+				ft_free_array(g_env.env, free);
+				g_env.env = tab;
 			}
 			i++;
 		}
 	}
-	g_env.env = tab;
 	return (status);
 }

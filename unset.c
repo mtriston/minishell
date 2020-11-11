@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 22:21:25 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/11 18:57:04 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/12 00:09:36 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,11 @@ static void	delete_arg(char *arg, char **envp)
 	while (envp[i])
 	{
 		if (ft_strncmp(arg, envp[i], ft_found(envp[i], '=')) != 0)
-			temp[j++] = ft_strdup(envp[i]);
+			temp[j++] = env_strdup(envp[i]);
 		i++;
 	}
 	temp[j] = NULL;
+	ft_free_array(g_env.env, free);
 	g_env.env = temp;
 }
 
@@ -52,7 +53,7 @@ int     cmd_unset(t_cmd *cmd, char **envp)
 	int     i;
 	int 	status;
 
-	i = 0;
+	i = 1;
 	status = 0;
 	while (cmd->args[i])
 	{
