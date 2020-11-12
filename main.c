@@ -71,26 +71,26 @@ void wait_child(pid_t pid)
 		g_env.sigquit = 0;
 	}
 }
+static int	execute_cmd_in_parent(t_cmd *cmd)
+{
 
+	if (ft_strcmp(cmd->name, "exit") == 0)
+		g_env.status = launch_builtin(EXIT)(cmd, g_env.env);
+	else if (ft_strcmp(cmd->name, "cd") == 0)
+		g_env.status = launch_builtin(CD)(cmd, g_env.env);
+	else if (ft_strcmp(cmd->name, "export") == 0 && cmd->args[1])
+		g_env.status = launch_builtin(EXPORT)(cmd, g_env.env);
+	else if (ft_strcmp(cmd->name, "unset") == 0)
+		g_env.status = launch_builtin(UNSET)(cmd, g_env.env);
+	else
+		return (0);
+	return (1);
+
+}
 static void	execute_cmd(t_cmd *cmd, t_exec exec)
 {
-	if (ft_strcmp(cmd->name, "exit") == 0)
-		launch_builtin(EXIT)(cmd, g_env.env);
-	if (ft_strcmp(cmd->name, "cd") == 0)
-	{
-		g_env.status = launch_builtin(CD)(cmd, g_env.env);
+	if (execute_cmd_in_parent(cmd))
 		return ;
-	}
-	if (ft_strcmp(cmd->name, "export") == 0 && cmd->args[1])
-	{
-		g_env.status = launch_builtin(EXPORT)(cmd, g_env.env);
-		return ;
-	}
-	if (ft_strcmp(cmd->name, "unset") == 0)
-	{
-		g_env.status = launch_builtin(UNSET)(cmd, g_env.env);
-		return ;
-	}
 	g_env.pid = fork();
 	if (g_env.pid < 0)
 		exit(EXIT_FAILURE);
