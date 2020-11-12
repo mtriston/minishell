@@ -24,8 +24,8 @@ void	signal_int(int code)
 	{
 		kill(g_env.pid, g_env.status);
 		ft_putstr_fd("\n", 2);
-		g_env.status = 130;
 	}
+	g_env.status = 130;
 	g_env.sigint = 1;
 }
 
