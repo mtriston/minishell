@@ -14,10 +14,10 @@
 
 int		syntax_error(char *token)
 {
-	ft_putstr_fd("minishell: ",1);
-	ft_putstr_fd("syntax error near unexpected token `",1);
-	ft_putstr_fd(token, 1);
-	ft_putendl_fd("'", 1);
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd("syntax error near unexpected token `", 2);
+	ft_putstr_fd(token,  2);
+	ft_putendl_fd("'",  2);
 	return (2);
 }
 
@@ -31,6 +31,6 @@ int ft_perror(char *s, int code)
 		ft_putendl_fd(strerror(errno), 2);
 	}
 	else
-		write(1, "\n", 1);
+		write(1, "\n", 2);
 	return (code);
 }

@@ -90,14 +90,24 @@ int	cmd_env(t_cmd *cmd, char **envp)
 int	cmd_exit(t_cmd *cmd, char **envp)
 {
 	int status;
+	int i;
 
 	(void)envp;
-	if (cmd && cmd->args[1])
+	i = 0;
+	status = 0;
+	if (cmd && envp_len(cmd->args) > 2)
+		return(ft_perror("too many arguments", 2));
+	while (cmd && cmd->args[1] && cmd->args[1][i] && status == 0)
+	{
+		if (!ft_isdigit(cmd->args[1][i]))
+			status = ft_perror("numeric argument requared", 1);
+		i++;
+	}
+	if (cmd && cmd->args[1] && status == 0)
 		status = ft_atoi(cmd->args[1]);
-	else
-		status = 0;
 	free_gc(NULL);
 	ft_free_array(g_env.env, free);
+	ft_putendl_fd("exit", 2);
 	exit(status);
 }
 
