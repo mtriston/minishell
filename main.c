@@ -173,17 +173,17 @@ void			print_prompt(void)
 	path = getcwd(NULL, 0);
 	home = ft_getenv("HOME", g_env.env);
 	home_len = ft_strlen(home);
-	ft_putstr_fd("\033[1m \033[31m ", 1);
-	ft_putstr_fd(ft_getenv("USERNAME", g_env.env), 1);
-	ft_putstr_fd(":", 1);
+	ft_putstr_fd("\033[1m \033[31m ", 0);
+	ft_putstr_fd(ft_getenv("USER", g_env.env), 0);
+	ft_putstr_fd(":", 0);
 	if (ft_strncmp(path, home, home_len) == 0)
 	{
-		ft_putstr_fd("~", 1);
-		ft_putstr_fd(path + home_len, 1);
+		ft_putstr_fd("~", 0);
+		ft_putstr_fd(path + home_len, 0);
 	}
 	else
-		ft_putstr_fd(path, 1);
-	ft_putstr_fd("$ \033[0m", 1);
+		ft_putstr_fd(path, 0);
+	ft_putstr_fd("$ \033[0m", 0);
 	free(path);
 }
 
