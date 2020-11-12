@@ -6,63 +6,40 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/07 11:50:44 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/08 13:35:47 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/11/08 14:22:25 by kdahl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void		*memfree(void *ptr)
-{
-	if (ptr)
-	{
-		free(ptr);
-		ptr = NULL;
-	}
-	return (NULL);
-}
-
-void	signal_int(int code, t_sig *sig)
+void	signal_int(int code)
 {
 	(void)code;
-	if (sig->pid == 0)
+	if (g_env.pid == 0)
 	{
-		ft_putstr_fd("\b\b  ", 2);
-		ft_putstr_fd("\n", 2);
-		ft_putstr_fd("💀 minishell ", 2);
+		ft_putchar_fd('\n', 2);
+		print_prompt();
 	}
 	else
 	{
+		kill(g_env.pid, g_env.status);
 		ft_putstr_fd("\n", 2);
-		sig->status = 130;
 	}
-	sig->sigint = 1;
+	g_env.status = 130;
+	g_env.sigint = 1;
 }
 
-void	signal_quit(int code, t_sig *sig)
+void	signal_quit(int code)
 {
-	char	*nbr;
-
-	nbr = ft_itoa(code);
-	if (sig->pid != 0)
+	if (g_env.pid != 0)
 	{
-		ft_putstr_fd("\n", 2);
-		// ft_putendl_fd(nbr, 2);
-		sig->status = 131;
-		sig->sigquit = 1;
+		kill(g_env.pid, g_env.status);
+		ft_putstr_fd("Quit: ", 2);
+		ft_putnbr_fd(code, 2);
+		ft_putchar_fd('\n', 2);
+		g_env.status = 131;
+		g_env.sigquit = 1;
 	}
 	else
 		ft_putstr_fd("\b\b  \b\b", 2);
-	memfree(nbr);
-}
-
-t_sig	signal_init(t_exec exec)
-{
-	t_sig	signal;
-	
-	signal.sigint = 0;
-	signal.sigquit = 0;
-	signal.pid = exec.pid;
-	signal.status = 0;
-	return (signal);
 }

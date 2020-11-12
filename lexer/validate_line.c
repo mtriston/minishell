@@ -6,20 +6,14 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:22 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 13:45:00 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/11 20:47:49 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 #include "lexer.h"
 
-/*
- * Читается STDIN, затем проверяется корректность ввода.
- * Сначала проверяются синтаксические ошибки, затем, если в конце строки
- * есть символ | или \, то предлагается продолжить ввод.
- */
-
-int			quotes_are_closed(const char *line)
+static int	quotes_are_closed(const char *line)
 {
 	int i;
 	int in_quote;
@@ -30,7 +24,7 @@ int			quotes_are_closed(const char *line)
 	in_dquote = -1;
 	while (line[i])
 	{
-		if (line[i] == '\\')
+		if (line[i] == '\\' && in_quote == -1)
 			i++;
 		else if (line[i] == '\'' && in_dquote == -1)
 			in_quote *= -1;
@@ -59,7 +53,7 @@ static int	check_begin(char *line)
 
 static int	check_end(char *line)
 {
-	size_t i;
+	size_t	i;
 	int		continue_input;
 
 	i = ft_strlen(line);
@@ -67,7 +61,7 @@ static int	check_end(char *line)
 	i = i == 0 ? i : i - 1;
 	if (i >= 1 && line[i] == '\\' && line[i - 1] != '\\')
 		continue_input = 1;
-	while (i >= 0 && ft_isspace(line[i]))
+	while (i != 0 && ft_isspace(line[i]))
 		i--;
 	if (line[i] == '<' || line[i] == '>')
 		return (syntax_error("newline"));
@@ -79,7 +73,7 @@ static int	check_end(char *line)
 	return (VALID_LINE);
 }
 
-static int		check_next_char(char c, char *line)
+static int	check_next_char(char c, char *line)
 {
 	if (c == ';' && *line == ';')
 		return (syntax_error(";;"));
@@ -102,7 +96,7 @@ static int		check_next_char(char c, char *line)
 	return (VALID_LINE);
 }
 
-int	validate_line(char *line)
+int			validate_line(char *line)
 {
 	int status;
 	int in_quote;
@@ -113,8 +107,7 @@ int	validate_line(char *line)
 	in_quote = 0;
 	in_dquote = 0;
 	i = 0;
-	if (check_begin(line) == SYNTAX_ERROR)
-		return (SYNTAX_ERROR);
+	status = check_begin(line);
 	while (line[i] != '\0' && status == VALID_LINE)
 	{
 		if (line[i] == '\\')
@@ -127,8 +120,8 @@ int	validate_line(char *line)
 			status = check_next_char(line[i], &line[i + 1]);
 		i++;
 	}
+	status = status == SYNTAX_ERROR ? SYNTAX_ERROR : check_end(line);
 	if (status == SYNTAX_ERROR)
-		return (SYNTAX_ERROR);
-	status = check_end(line);
+		g_env.status = 2;
 	return (status);
 }

@@ -72,8 +72,7 @@ void		remove_token(t_token **root, t_token *for_delete)
 			temp->next = node->next;
 			token_del_one(node, free_gc);
 			node = temp;
-			i = 0;
-			break;
+			break ;
 		}
 		temp = i++ > 0 ? temp->next : temp;
 		node = node != NULL ? node->next : node;

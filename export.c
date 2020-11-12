@@ -6,13 +6,23 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/09 19:40:18 by kdahl             #+#    #+#             */
-/*   Updated: 2020/10/24 22:42:44 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/11/12 17:26:05 by kdahl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int				ft_found(char *str, char c)
+char 		*env_strdup(char *str)
+{
+	char	*dest;
+
+	if (!(dest = (char *)malloc((ft_strlen(str) + 1) * sizeof(char))))
+		exit(EXIT_FAILURE);
+	dest = ft_strcpy(dest, str);
+	return (dest);
+}
+
+int				ft_found(const char *str, char c)
 {
 	int i;
 
@@ -24,73 +34,35 @@ int				ft_found(char *str, char c)
 	return (-1);
 }
 
-static void			free_it(char **str)
-{
-	int i;
-
-	i = 0;
-	while (str[i])
-		free(str[i++]);
-	free(str);
-	return ;
-}
-
-static void		export_no_arg(char **str)
-{
-	int i;
-
-	i = 0;
-	while (str[i])
-	{
-		write(1, "declare -x ", 11);
-		write(1, str[i], ft_strlen(str[i]));
-		write(1, "\n", 1);
-		i++;
-	}
-	//free_it(envp);
-}
-
 int				envp_len(char **envp)
 {
 	int len;
 
-	len = -1;
-	while (envp[++len])
-		;
+	len = 0;
+	while (envp[len])
+		len++;
 	return (len);
 }
 
-static char		*new_arg(char *old)
+int		is_valid_name(char *str)
 {
-	char	*new;
-	int		i;
-	int		j;
-
-	i = 0;
-	j = 0;
-	new = ft_calloc(ft_strlen(old) + 3, sizeof(char));
-	while (old[i])
+	if (!ft_isalpha(str[0]) && str[0] != '_')
+		return (0);
+	while (*str && *str != '=')
 	{
-		new[j++] = old[i++];
-		if (old[i - 1] == '=')
-		{
-			if (!old[i])
-				new[j++] = '"';
-			new[j++] = '"';
-		}
-		else if (!old[i])
-			new[j++] = '"';
+		if (!ft_isalnum(*str) && *str != '_')
+			if (!(*str == '+' && *(str + 1) && *(str + 1) == '='))
+				return (0);
+		str++;
 	}
-	new[j] = 0;
-	return (new);
+	return (1);
 }
 
-static char		**no_arg(char **envp)
+void		export_print_env(char **envp)
 {
 	int i;
 	int j;
 	char *temp;
-
 	i = 0;
 	while (envp[i])
 	{
@@ -105,141 +77,97 @@ static char		**no_arg(char **envp)
 			}
 			j++;
 		}
-	i++;
+		i++;
 	}
-	return (envp);
-}
-
-static void		new_envp2(char *str, char **temp, int i, int j, char **envp)
-{
-	int sum;
-
-	sum = 0;
-	while (envp[++j])
-		if (ft_strncmp(str, envp[j], ft_found(str, '=') + 1) == 0)
-		{
-			if (!(temp[j] = ft_strdup(str)))
-				exit(1);
-			sum = 1;
-			break ;
-		}
-	if (!envp[j])
-		if (!(temp[i] = ft_strdup(str)))
-			exit(1);
-	while (envp[i++])
+	while (*envp)
 	{
-		if (!(temp[i - sum] = ft_strdup(envp[i - 1])))
-			exit(1);
+		ft_putstr_fd("declare -x ", 1);
+		ft_putendl_fd(*envp++, 1);
 	}
-	return ;
 }
 
-static void		new_envp(char *str, char **envp)
+int		pars_exist(char *str, char **envp)
 {
-	char	**temp;
-	char *temp2;
-	char	**buff;
-	int		count;
-	int		i;
-	int		j;
-	int k;
+	int i;
+	int	len;
+	char	*temp;
 
-	count = 2;
-	i = -1;
-	k = 0;
+	i = 0;
+	len = 0;
+	temp = ft_strdup(str);
+	while (*temp)
+	{
+		if (*temp == ' ' || *temp == '=')
+			break ;
+		len++;
+		temp++;
+	}
 	while (envp[i])
 	{
-  		if (ft_strncmp(str, envp[i], ft_found(str, '=') + 1) == 0)
-   		{
-     		temp2 = envp[i];
-      		envp[i] = str;
-      		free_gc(temp2);
-  	 	}
+		if (ft_strncmp(str, envp[i], len) == 0)
+			return (i);
+		i++;
 	}
-	i = -1;
-	j = -1;
-	temp = (char**)ft_calloc(envp_len(envp) + count, sizeof(char*));
-	while (envp[++i])
-		temp[i] = envp[i];
-	new_envp2(str, temp, i, j, envp);
-	buff = envp;
-	envp = temp;
-	//free_it(buff);
+	return (0);
 }
 
-void export_print_env(char **envp)
+int	if_exist(char *arg, char *array, char **envp)
 {
-   int i;
-   int j;
-   char *temp;
-   i = 0;
-   while (envp[i])
-   {
-      j = 0;
-      while (envp[j + 1])
-      {
-         if (ft_strcmp(envp[j], envp[j + 1]) > 0)
-         {
-            temp = envp[j];
-            envp[j] = envp[j + 1];
-            envp[j + 1] = temp;
-         }
-         j++;
-      }
-      i++;
-   }
-   while (*envp)
-   {
-      ft_putstr_fd("declare -x ", 1);
-      ft_putendl_fd(*envp++, 1);
-   }
-}
-
-int		sort_export(int i, int j, char **envp, t_cmd *cmd)
-{
-	char *temp;
+	int	i;
 	
-	while (envp[j])
-    {
-        if (ft_strncmp(cmd->args[i], envp[j], ft_found(cmd->args[i], '=') + 1) == 0)
-        {
-            temp = envp[j];
-            envp[j] = cmd->args[i];
-            free_gc(temp);
-            break ;
-        }
-        j++;
-    }
-	return (i);
+	if (ft_strcmp(arg, array) == 0)
+		return (0);
+	if ((i = pars_exist(arg, envp)))
+	{
+		free(g_env.env[i]);
+		g_env.env[i] = env_strdup(arg);
+	}
+	return (1);
 }
 
 int cmd_export(t_cmd *cmd, char **envp)
 {
-   int i;
-   int j;
-   int k;
-   char **tab;
+	int i;
+	int j;
+	int k;
+	int status;
+	char **tab;
 
-   i = 1;
-   if (!(cmd->args[1]))
-      export_print_env(envp);
-   else
-   {
-         while (cmd->args[i])
-         {
-            j = 0;
-			sort_export(i, j, envp, cmd);
-            k = 0;
-            j = 0;
-            tab = calloc_gc(envp_len(envp) + 2, sizeof(char *));
-            while (envp[k])
-              tab[j++] = envp[k++];
-            tab[j++] = cmd->args[i];
-            tab[j] = NULL;
-            envp = tab;
-            i++;
-       }
-    }
-    export_print_env(envp);
-	return (1);
+	i = 1;
+	status = 0;
+	tab = NULL;
+	if (cmd->args[1] == NULL)
+		export_print_env(envp);
+	else
+	{
+		while (cmd->args[i])
+		{
+			if (!is_valid_name(cmd->args[i]))
+			{
+				ft_putstr_fd("export: `", 2);
+				ft_putstr_fd(cmd->args[i], 2);
+				ft_putstr_fd("': not a valid identifier\n", 2);
+				status = 1;
+			}
+			else
+			{
+				j = 0;
+				k = 0;
+				j = 0;
+				tab = malloc((envp_len(g_env.env) + 2) * sizeof(char *));
+				while (g_env.env[k])
+				{
+					if (!(status = if_exist(cmd->args[i],  g_env.env[k], envp)))
+						return (status);
+					tab[j++] = env_strdup(g_env.env[k++]);
+				}
+				tab[j++] = env_strdup(cmd->args[i]);
+				tab[j] = NULL;
+				ft_free_array(g_env.env, free);
+				g_env.env = tab;
+			}
+			i++;
+		}
+	}
+	return (status);
 }

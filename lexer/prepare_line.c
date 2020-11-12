@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:23:39 by mtriston          #+#    #+#             */
-/*   Updated: 2020/10/31 15:02:24 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 18:40:02 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,11 +53,14 @@ static char	*handle_env_var(char *line, char **envp)
 	line = line + is_there_spec(line, '$');
 	*line = '\0';
 	line++;
-	while (line[i] && ft_isalnum(line[i]))
+	if (ft_isdigit(line[i]) || line[i] == '?')
 		i++;
+	else
+		while (line[i] && ft_isalnum(line[i]))
+			i++;
 	variable = ft_substr(line, 0, i);
 	line += i;
-	temp = ft_strjoin(begin, ft_getenv(variable,envp));
+	temp = ft_strjoin(begin, ft_getenv(variable, envp));
 	variable = temp;
 	temp = ft_strjoin(variable, line);
 	free_gc(variable);
@@ -65,15 +68,12 @@ static char	*handle_env_var(char *line, char **envp)
 	return (handle_env_var(temp, envp));
 }
 
-static char *handle_tilda(char *line, char **envp)
+static char	*handle_tilda(char *line, char **envp)
 {
-
 	char	*begin;
 	char	*home_dir;
 	char	*temp;
-	size_t	i;
 
-	i = 0;
 	if (is_there_spec(line, '~') < 0)
 		return (line);
 	begin = line;
@@ -86,7 +86,7 @@ static char *handle_tilda(char *line, char **envp)
 	temp = ft_strjoin(home_dir, line);
 	free_gc(home_dir);
 	free_gc(line);
-	return (handle_env_var(temp, envp));
+	return (handle_tilda(temp, envp));
 }
 
 char		*prepare_line(char *line, char **envp)

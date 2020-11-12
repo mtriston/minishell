@@ -6,14 +6,14 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/21 19:32:51 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/04 22:06:15 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/07 18:38:27 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 #include "lexer.h"
 
-void 		handle_quote(char **line, t_token **token, char quote)
+static void	handle_quote(char **line, t_token **token, char quote)
 {
 	size_t i;
 
@@ -26,38 +26,30 @@ void 		handle_quote(char **line, t_token **token, char quote)
 	*line = *line + i;
 }
 
-void		handle_blank(char **line, t_token **token, int data_size)
+static void	handle_blank(char **line, t_token **token, int data_size)
 {
 	size_t i;
 
 	i = 0;
 	while ((*line)[i] && ft_isblank((*line)[i]))
 		i++;
-	if ((*line)[i] && (ft_strlen((*token)-> data) > 0))
+	if ((*line)[i] && (ft_strlen((*token)->data) > 0))
 		*token = token_init(data_size, token);
 	*line += i;
 }
 
-void		handle_backslash(char **line, t_token **token)
+static void	handle_general(char **line, t_token **token)
 {
-	(*line)++;
-	ft_strlcat((*token)->data, *line, ft_strlen((*token)->data) + 2);
-	(*line)++;
-}
-
-void 		handle_general(char **line, t_token **token)
-{
-	char *spec_symbols = "<>|;$\'\"\\ ";
-	size_t i;
+	size_t	i;
 
 	i = 0;
-	while ((*line)[i] && !ft_strchr(spec_symbols, (*line)[i]))
+	while ((*line)[i] && !ft_strchr("<>|;$\'\"\\ ", (*line)[i]))
 		i++;
 	ft_strlcat((*token)->data, *line, ft_strlen((*token)->data) + i + 1);
 	*line = *line + i;
 }
 
-void 		handle_redirect(char **line, t_token **token, int data_size)
+static void	handle_redirect(char **line, t_token **token, int data_size)
 {
 	if ((*token)->data[0])
 		*token = token_init(data_size, token);
@@ -73,7 +65,7 @@ t_token		*lexer(char *line, char **env)
 {
 	t_token *root;
 	t_token *current;
-	size_t 	data_size;
+	size_t	data_size;
 
 	line = prepare_line(line, env);
 	data_size = ft_strlen(line);
@@ -86,7 +78,10 @@ t_token		*lexer(char *line, char **env)
 		else if (*line == '\'' || *line == '\"')
 			handle_quote(&line, &current, *line);
 		else if (*line == '\\')
-			handle_backslash(&line, &current);
+		{
+			ft_strlcat(current->data, ++line, ft_strlen(current->data) + 2);
+			line++;
+		}
 		else if (ft_isblank(*line))
 			handle_blank(&line, &current, data_size);
 		if (!ft_strchr("<>|;$\'\"\\", *line))

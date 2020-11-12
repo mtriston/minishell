@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 20:15:32 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/07 15:07:39 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/11/12 16:52:02 by kdahl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,10 @@
 # include <unistd.h>
 # include <limits.h>
 # include "libft/libft.h"
+# include <signal.h>
 
-# define FAILURE 0
-# define SUCCESS 1
+# define FAILURE 1
+# define SUCCESS 0
 
 # define BUILTIN_NUM 7
 # define ECHO 0
@@ -38,14 +39,12 @@
 # define ENV 5
 # define EXIT 6
 
-typedef struct s_exec
+typedef struct 		s_exec
 {
-	int			fd_in;
-	int			fd_out;
-	int			fd_pipe[2];
-	pid_t		pid;
-	int			status;
-}				t_exec;
+	int				fd_in;
+	int				fd_out;
+	int				fd_pipe[2];
+}					t_exec;
 
 typedef struct		s_token
 {
@@ -61,36 +60,41 @@ typedef struct		s_cmd
 	int				in;
 	int 			out;
 	struct s_cmd	*next;
-	struct s_cmd	*prev;
 }					t_cmd;
 
-typedef struct		s_sig
+typedef struct		s_env
 {
-	int				sigint;
-	int				sigquit;
-	int				status;
+	char 			**env;
+	int 			status;
 	pid_t			pid;
-}					t_sig;
+	int 			sigint;
+	int 			sigquit;
+}					t_env;
 
+t_env				g_env;
 
-int		main(int argc, char **argv, char **envp);
-char    **split_line(char const *s);
-int		launch_executable(t_cmd *cmd, char **envp);
-char	*ft_getenv(char *arg, char **envp);
-int		cmd_echo(t_cmd *cmd, char **envp);
-int		cmd_cd(t_cmd *cmd, char **envp);
-int		cmd_exit(t_cmd *cmd, char **envp);
-int		cmd_pwd(t_cmd *cmd, char **envp);
-int		cmd_env(t_cmd *cmd, char **envp);
-void	ft_perror(char *s);
-char	*read_line();
-int		syntax_error(char *token);
-char 		*parse_next_cmd(char *cmd_line, t_cmd **cmd, char **env);
-int			cmd_export(t_cmd *cmd, char **envp);
-int			cmd_unset(t_cmd *cmd, char **envp);
-int			ft_found(char *str, char c);
-int			envp_len(char **envp);
-t_sig		signal_init(t_exec exes);
-void		signal_quit(int code, t_sig *sig);
-void		signal_int(int code, t_sig *sig);
+int					main(int argc, char **argv, char **envp);
+char   				 **split_line(char const *s);
+int					launch_executable(t_cmd *cmd, char **envp);
+char				*ft_getenv(char *arg, char **envp);
+int					cmd_echo(t_cmd *cmd, char **envp);
+int					cmd_cd(t_cmd *cmd, char **envp);
+int					cmd_exit(t_cmd *cmd, char **envp);
+int					cmd_pwd(t_cmd *cmd, char **envp);
+int					cmd_env(t_cmd *cmd, char **envp);
+int					ft_perror(char *s, int code);
+char				*read_line();
+int					syntax_error(char *token);
+char 				*parse_next_cmd(char *cmd_line, t_cmd **cmd, char **env);
+int					cmd_export(t_cmd *cmd, char **envp);
+int					cmd_unset(t_cmd *cmd, char **envp);
+int					ft_found(const char *str, char c);
+int					envp_len(char **envp);
+void				signal_quit(int code);
+void				signal_int(int code);
+int					is_valid_name(char *str);
+int					pars_unset(char *str, char **envp);
+void				print_prompt(void);
+void				delete_arg(char *arg, char **envp);
+char 				*env_strdup(char *str);
 #endif

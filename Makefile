@@ -6,7 +6,7 @@
 #    By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/05 20:19:48 by kdahl             #+#    #+#              #
-#    Updated: 2020/11/07 14:32:16 by kdahl            ###   ########.fr        #
+#    Updated: 2020/10/27 20:32:32 by mtriston         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,7 @@ SRCS = main.c builtins.c exec.c error.c export.c unset.c lexer/*.c parser/*.c si
 OBJS = $(SRCS:.c = .o)
 
 
-CC = gcc -g ${SRCS}
+CC = gcc -g ${SRCS} -Wall -Wextra -Werror
 
 all:	$(NAME)
 			./minishell
