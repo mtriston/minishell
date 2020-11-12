@@ -65,7 +65,7 @@ static char	*handle_env_var(char *line, char **envp)
 	temp = ft_strjoin(variable, line);
 	free_gc(variable);
 	free_gc(line);
-	return (handle_env_var(temp, envp));
+	return (handle_env_var(temp, g_env.env));
 }
 
 static char	*handle_tilda(char *line, char **envp)
@@ -86,12 +86,13 @@ static char	*handle_tilda(char *line, char **envp)
 	temp = ft_strjoin(home_dir, line);
 	free_gc(home_dir);
 	free_gc(line);
-	return (handle_tilda(temp, envp));
+	return (handle_tilda(temp, g_env.env));
 }
 
 char		*prepare_line(char *line, char **envp)
 {
-	line = handle_env_var(line, envp);
-	line = handle_tilda(line, envp);
+	(void)envp;
+	line = handle_env_var(line, g_env.env);
+	line = handle_tilda(line, g_env.env);
 	return (line);
 }
