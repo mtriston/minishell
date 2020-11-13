@@ -12,7 +12,27 @@
 
 NAME = minishell
 
-SRCS = main.c builtins.c exec.c exec_cmd.c error.c export.c export_cont.c unset.c lexer/*.c parser/*.c signals.c launching_cmd.c
+SRCS = \
+main.c \
+builtins.c \
+exec.c \
+exec_cmd.c \
+error.c \
+export.c \
+export_cont.c \
+unset.c \
+lexer/lexer.c \
+lexer/lexer_utils.c \
+lexer/prepare_line.c \
+lexer/read_line.c \
+lexer/token_list_utils.c \
+lexer/validate_line.c \
+parser/cmd_list_utils.c \
+parser/parse_redirects.c \
+parser/parser.c \
+parser/split_pipe.c \
+signals.c \
+launching_cmd.c\
 
 OBJS = $(SRCS:.c = .o)
 
