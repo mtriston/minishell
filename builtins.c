@@ -81,7 +81,8 @@ int	cmd_env(t_cmd *cmd, char **envp)
 	(void)cmd;
 	while (*envp)
 	{
-		ft_putendl_fd(*envp, 1);
+		if (ft_strchr(*envp, '='))
+			ft_putendl_fd(*envp, 1);
 		envp++;
 	}
 	return (SUCCESS);
