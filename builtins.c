@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/07 13:58:22 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/13 20:25:41 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/13 23:15:44 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ int			cmd_cd(t_cmd *cmd, char **envp)
 		ft_perror("cd: too many arguments", 1);
 		return (FAILURE);
 	}
+	change_env(ft_strjoin("OLDPWD=", ft_getenv("PWD", g_env.env)));
 	if (cmd->args[1] == NULL)
 		dir = ft_getenv("HOME", envp);
 	else
@@ -88,6 +89,8 @@ int			cmd_exit(t_cmd *cmd, char **envp)
 		return (ft_perror("too many arguments", 2));
 	while (cmd && cmd->args[1] && cmd->args[1][i] && status == 0)
 	{
+		if (cmd->args[1][0] == '+' || cmd->args[1][0] == '-')
+			i++;
 		if (!ft_isdigit(cmd->args[1][i]))
 			status = ft_perror("numeric argument requared", 1);
 		i++;
