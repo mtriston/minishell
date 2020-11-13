@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:23:39 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 18:40:02 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/13 23:09:24 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static int	is_there_spec(const char *line, char spec_symbol)
 	return (-1);
 }
 
-static char	*handle_env_var(char *line, char **envp)
+static char	*handle_env_var(char *line)
 {
 	char	*begin;
 	char	*variable;
@@ -60,15 +60,15 @@ static char	*handle_env_var(char *line, char **envp)
 			i++;
 	variable = ft_substr(line, 0, i);
 	line += i;
-	temp = ft_strjoin(begin, ft_getenv(variable, envp));
+	temp = ft_strjoin(begin, ft_getenv(variable, g_env.env));
 	variable = temp;
 	temp = ft_strjoin(variable, line);
 	free_gc(variable);
 	free_gc(line);
-	return (handle_env_var(temp, g_env.env));
+	return (handle_env_var(temp));
 }
 
-static char	*handle_tilda(char *line, char **envp)
+static char	*handle_tilda(char *line)
 {
 	char	*begin;
 	char	*home_dir;
@@ -80,19 +80,18 @@ static char	*handle_tilda(char *line, char **envp)
 	line = line + is_there_spec(line, '~');
 	*line = '\0';
 	line++;
-	home_dir = ft_getenv("HOME", envp);
+	home_dir = ft_getenv("HOME", g_env.env);
 	temp = ft_strjoin(begin, home_dir);
 	home_dir = temp;
 	temp = ft_strjoin(home_dir, line);
 	free_gc(home_dir);
 	free_gc(line);
-	return (handle_tilda(temp, g_env.env));
+	return (handle_tilda(temp));
 }
 
-char		*prepare_line(char *line, char **envp)
+char		*prepare_line(char *line)
 {
-	(void)envp;
-	line = handle_env_var(line, g_env.env);
-	line = handle_tilda(line, g_env.env);
+	line = handle_env_var(line);
+	line = handle_tilda(line);
 	return (line);
 }

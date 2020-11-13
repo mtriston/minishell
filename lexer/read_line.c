@@ -6,14 +6,14 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/18 14:00:33 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/08 14:29:21 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/13 22:51:27 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 #include "lexer.h"
 
-char	*read_line(void)
+char		*read_line(void)
 {
 	char	*line;
 	int		status;

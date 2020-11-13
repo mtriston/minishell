@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/13 16:37:50 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/13 20:42:35 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/13 22:49:20 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ static int	execute_cmd_in_parent(t_cmd *cmd)
 
 static void	execute_cmd(t_cmd *cmd, t_exec exec)
 {
+	if (cmd->in == -1)
+		return ;
 	if (execute_cmd_in_parent(cmd))
 		return ;
 	g_env.pid = fork();
@@ -91,7 +93,7 @@ void		execute_line(char *cmd_line)
 	while (*cmd_line)
 	{
 		cmd = NULL;
-		cmd_line = parse_next_cmd(cmd_line, &cmd, g_env.env);
+		cmd_line = parse_next_cmd(cmd_line, &cmd);
 		while (cmd)
 		{
 			if (cmd->next)

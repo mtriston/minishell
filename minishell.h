@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 20:15:32 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/13 20:43:36 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/13 23:06:55 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ void				destroy_cmd(t_cmd **lst);
 void				wait_child(pid_t pid);
 void				print_prompt(void);
 char				*env_strdup(char *str);
-char				*parse_next_cmd(char *cmd_line, t_cmd **cmd, char **env);
+char				*parse_next_cmd(char *cmd_line, t_cmd **cmd);
 char				*ft_getenv(char *arg, char **envp);
 char				*read_line();
 int					change_env(char *str);

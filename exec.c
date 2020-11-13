@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/10 20:30:29 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/13 16:31:48 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/11/13 22:24:36 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ int				launch_executable(t_cmd *cmd, char **envp)
 {
 	char	path[PATH_MAX];
 
+	envp = g_env.env;
 	ft_bzero(path, PATH_MAX);
 	if (cmd->name[0] == '.' && cmd->name[1] == '/')
 	{

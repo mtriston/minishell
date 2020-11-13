@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/21 19:32:51 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/13 20:08:39 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/13 23:11:54 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,13 +66,13 @@ static void	handle_general(char **line, t_token **token)
 	*line = *line + i;
 }
 
-t_token		*lexer(char *line, char **env)
+t_token		*lexer(char *line)
 {
 	t_token *root;
 	t_token *current;
 	size_t	data_size;
 
-	line = prepare_line(line, env);
+	line = prepare_line(line);
 	data_size = ft_strlen(line);
 	root = token_init(data_size, NULL);
 	current = root;

@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/08 15:00:55 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/08 15:08:54 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/13 22:49:20 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,37 +56,33 @@ static int	parse_redirect_out(t_token **tokens, int fd)
 
 static int	parse_redirect_in(t_token **tokens, int fd)
 {
-	t_token	*ptr;
+	t_token *ptr;
 
 	ptr = *tokens;
 	if (!is_there_redirect(*tokens, '<'))
 		return (fd);
 	while (ptr)
 	{
-		if (ptr->type == TYPE_SPECIAL && (ft_strcmp(ptr->data, "<") == 0))
+		if (ptr->type == TYPE_SPECIAL && (ft_strcmp(ptr->data, "<") == 0)  \
+																&& ptr->next)
 		{
-			if (ptr->next)
-			{
-				if (fd != 0)
-					close(fd);
-				if ((fd = open(ptr->next->data, O_RDONLY)) < 0)
-					return (ft_perror(ptr->next->data, -1));
-			}
+			if (fd != 0)
+				close(fd);
+			fd = open(ptr->next->data, O_RDONLY);
 			remove_token(tokens, ptr->next);
 			remove_token(tokens, ptr);
 			break ;
 		}
 		ptr = ptr->next;
 	}
+	if (fd < 0)
+		return (ft_perror("", -1));
 	return (parse_redirect_in(tokens, fd));
 }
 
 void		parse_redirects(t_cmd *cmd, t_token **tokens)
 {
 	if ((cmd->in = parse_redirect_in(tokens, 0)) == -1)
-	{
 		g_env.status = 1;
-		cmd->in = 0;
-	}
 	cmd->out = parse_redirect_out(tokens, 1);
 }
