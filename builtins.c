@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/07 13:58:22 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/13 17:01:44 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/11/13 20:00:44 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ int			cmd_echo(t_cmd *cmd, char **envp)
 int			cmd_cd(t_cmd *cmd, char **envp)
 {
 	char	*dir;
+	char	*new_pwd;
 
 	if (envp_len(cmd->args) > 2)
 	{
@@ -47,11 +48,6 @@ int			cmd_cd(t_cmd *cmd, char **envp)
 	}
 	if (cmd->args[1] == NULL)
 		dir = ft_getenv("HOME", envp);
-	else if (ft_strcmp(cmd->args[1], "-") == 0)
-	{
-		dir = ft_getenv("HOME", envp);
-		cmd_pwd(cmd, envp);
-	}
 	else
 		dir = cmd->args[1];
 	if (chdir(dir) != 0)
@@ -59,6 +55,9 @@ int			cmd_cd(t_cmd *cmd, char **envp)
 		ft_perror("cd", 1);
 		return (FAILURE);
 	}
+	new_pwd = getcwd(NULL, 0);
+	change_env(ft_strjoin("PWD=", new_pwd));
+	free(new_pwd);
 	return (SUCCESS);
 }
 

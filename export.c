@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/09 19:40:18 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/13 16:27:31 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/11/13 19:20:36 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void		export_print_env(char **envp)
 	}
 }
 
-static int	change_env(char *str)
+int			change_env(char *str)
 {
 	int		i;
 	int		len;

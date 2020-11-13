@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 20:15:32 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/13 16:43:54 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/11/13 19:23:10 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,5 +98,5 @@ char 				*env_strdup(char *str);
 char 				*parse_next_cmd(char *cmd_line, t_cmd **cmd, char **env);
 char				*ft_getenv(char *arg, char **envp);
 char				*read_line();
-char   				 **split_line(char const *s);
+int					change_env(char *str);
 #endif
