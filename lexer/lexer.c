@@ -51,6 +51,7 @@ static void	handle_dquote(char **line, t_token **token)
 			*line += 1;
 		}
 	}
+	(*line) = **line ? (*line) + 1 : (*line);
 }
 
 static void	handle_general(char **line, t_token **token)
