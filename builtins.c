@@ -3,29 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/07 13:58:22 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/08 14:46:13 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/13 17:01:44 by kdahl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char *ft_getenv(char *arg, char **envp)
-{
-	if (ft_strcmp(arg, "?") == 0)
-		return (ft_itoa(g_env.status));
-	while (*envp)
-	{
-		if (ft_strncmp(*envp, arg, ft_found(*envp, '=')) == 0)
-			return (*envp + ft_strlen(arg) + 1);
-		envp++;
-	}
-	return ("");
-}
-
-int cmd_echo(t_cmd *cmd, char **envp)
+int			cmd_echo(t_cmd *cmd, char **envp)
 {
 	int		n_flag;
 	size_t	i;
@@ -46,12 +33,12 @@ int cmd_echo(t_cmd *cmd, char **envp)
 		if (!n_flag)
 			ft_putstr_fd("\n", 1);
 	}
-		return(SUCCESS);
+	return (SUCCESS);
 }
 
-int cmd_cd(t_cmd *cmd, char **envp)
+int			cmd_cd(t_cmd *cmd, char **envp)
 {
-	char *dir;
+	char	*dir;
 
 	if (envp_len(cmd->args) > 2)
 	{
@@ -72,31 +59,31 @@ int cmd_cd(t_cmd *cmd, char **envp)
 		ft_perror("cd", 1);
 		return (FAILURE);
 	}
-	//cmd_export("PWD", getcwd(NULL, 0), envp);
 	return (SUCCESS);
 }
 
-int	cmd_env(t_cmd *cmd, char **envp)
+int			cmd_env(t_cmd *cmd, char **envp)
 {
 	(void)cmd;
 	while (*envp)
 	{
-		ft_putendl_fd(*envp, 1);
+		if (ft_strchr(*envp, '='))
+			ft_putendl_fd(*envp, 1);
 		envp++;
 	}
 	return (SUCCESS);
 }
 
-int	cmd_exit(t_cmd *cmd, char **envp)
+int			cmd_exit(t_cmd *cmd, char **envp)
 {
-	int status;
-	int i;
+	int		status;
+	int		i;
 
 	(void)envp;
 	i = 0;
 	status = 0;
 	if (cmd && envp_len(cmd->args) > 2)
-		return(ft_perror("too many arguments", 2));
+		return (ft_perror("too many arguments", 2));
 	while (cmd && cmd->args[1] && cmd->args[1][i] && status == 0)
 	{
 		if (!ft_isdigit(cmd->args[1][i]))
@@ -111,7 +98,7 @@ int	cmd_exit(t_cmd *cmd, char **envp)
 	exit(status);
 }
 
-int	cmd_pwd(t_cmd *cmd, char **envp)
+int			cmd_pwd(t_cmd *cmd, char **envp)
 {
 	char buf[PATH_MAX];
 

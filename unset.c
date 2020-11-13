@@ -6,13 +6,13 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 22:21:25 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/12 16:51:33 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/11/13 16:54:03 by kdahl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	delete_arg(char *arg, char **envp)
+static void		delete_arg(char *arg, char **envp)
 {
 	char	**temp;
 	int		i;
@@ -32,7 +32,7 @@ void	delete_arg(char *arg, char **envp)
 	g_env.env = temp;
 }
 
-int		pars_unset(char *str, char **envp)
+static int		pars_unset(char *str, char **envp)
 {
 	int i;
 	int	len;
@@ -48,10 +48,10 @@ int		pars_unset(char *str, char **envp)
 	return (0);
 }
 
-int     cmd_unset(t_cmd *cmd, char **envp)
+int				cmd_unset(t_cmd *cmd, char **envp)
 {
-	int     i;
-	int 	status;
+	int		i;
+	int		status;
 
 	i = 1;
 	status = 0;

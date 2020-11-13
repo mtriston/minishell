@@ -6,13 +6,13 @@
 #    By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/05 20:19:48 by kdahl             #+#    #+#              #
-#    Updated: 2020/10/27 20:32:32 by mtriston         ###   ########.fr        #
+#    Updated: 2020/11/13 16:52:32 by kdahl            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
 
-SRCS = main.c builtins.c exec.c error.c export.c unset.c lexer/*.c parser/*.c signals.c
+SRCS = main.c builtins.c exec.c exec_cmd.c error.c export.c export_cont.c unset.c lexer/*.c parser/*.c signals.c launching_cmd.c
 
 OBJS = $(SRCS:.c = .o)
 
