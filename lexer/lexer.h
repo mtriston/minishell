@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 19:21:06 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/07 18:34:15 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/13 20:08:39 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 # define VALID_LINE 1
 # define CONTINUE_INPUT 0
 
+void		handle_blank(char **line, t_token **token, int data_size);
+void		handle_redirect(char **line, t_token **token, int data_size);
 t_token		*lexer(char *line, char **env);
 void		add_token_back(t_token **lst, t_token *new);
 t_token		*token_init(int data_size, t_token **root);

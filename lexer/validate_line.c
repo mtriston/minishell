@@ -121,7 +121,6 @@ int			validate_line(char *line)
 		i++;
 	}
 	status = status == SYNTAX_ERROR ? SYNTAX_ERROR : check_end(line);
-	if (status == SYNTAX_ERROR)
-		g_env.status = 2;
+	g_env.status = status == SYNTAX_ERROR ? 2 : g_env.status;
 	return (status);
 }
