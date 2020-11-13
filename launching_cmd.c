@@ -6,24 +6,24 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/13 16:51:49 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/13 16:52:10 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/11/13 20:45:45 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int			(*launch_builtin(int i))(t_cmd *cmd, char **envp)
+int			(*g_launch_builtin(int i))(t_cmd *cmd, char **envp)
 {
-	int (*launch_builtin[BUILTIN_NUM])(t_cmd *cmd, char **envp);
+	int (*g_launch_builtin[BUILTIN_NUM])(t_cmd *cmd, char **envp);
 
-	launch_builtin[ECHO] = &cmd_echo;
-	launch_builtin[CD] = &cmd_cd;
-	launch_builtin[PWD] = &cmd_pwd;
-	launch_builtin[EXPORT] = &cmd_export;
-	launch_builtin[UNSET] = &cmd_unset;
-	launch_builtin[ENV] = &cmd_env;
-	launch_builtin[EXIT] = &cmd_exit;
-	return (launch_builtin[i]);
+	g_launch_builtin[ECHO] = &cmd_echo;
+	g_launch_builtin[CD] = &cmd_cd;
+	g_launch_builtin[PWD] = &cmd_pwd;
+	g_launch_builtin[EXPORT] = &cmd_export;
+	g_launch_builtin[UNSET] = &cmd_unset;
+	g_launch_builtin[ENV] = &cmd_env;
+	g_launch_builtin[EXIT] = &cmd_exit;
+	return (g_launch_builtin[i]);
 }
 
 void		wait_child(pid_t pid)
