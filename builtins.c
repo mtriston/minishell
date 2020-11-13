@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/07 13:58:22 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/13 20:00:44 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/13 20:25:41 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,19 +20,22 @@ int			cmd_echo(t_cmd *cmd, char **envp)
 	(void)envp;
 	n_flag = 0;
 	i = 0;
-	if (cmd->args[0] != NULL)
+	if (cmd->args[1] != NULL)
 	{
 		if (ft_strncmp(cmd->args[1], "-n", 2) == 0)
+		{
 			n_flag = 1;
+			i++;
+		}
 		while (cmd->args[++i])
 		{
 			ft_putstr_fd(cmd->args[i], 1);
 			if (cmd->args[i + 1] != NULL)
 				ft_putstr_fd(" ", 1);
 		}
-		if (!n_flag)
-			ft_putstr_fd("\n", 1);
 	}
+	if (!n_flag)
+		ft_putstr_fd("\n", 1);
 	return (SUCCESS);
 }
 
