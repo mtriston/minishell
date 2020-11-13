@@ -3,20 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/10 20:30:29 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/08 18:48:11 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/13 16:31:48 by kdahl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char *find_command(char *cmd, char **envp)
+static void		shell_notfound(t_cmd *cmd)
 {
-	char **path_dirs;
-	DIR *dir;
-	struct dirent *entry;
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(cmd->name, 2);
+	ft_putendl_fd(": command not found", 2);
+}
+
+static char		*find_command(char *cmd, char **envp)
+{
+	char			**path_dirs;
+	DIR				*dir;
+	struct dirent	*entry;
 
 	if (!(path_dirs = ft_split(ft_getenv("PATH", envp), ":")))
 		return (NULL);
@@ -35,17 +42,20 @@ static char *find_command(char *cmd, char **envp)
 	return (NULL);
 }
 
-int		launch_executable(t_cmd *cmd, char **envp)
+int				launch_executable(t_cmd *cmd, char **envp)
 {
 	char	path[PATH_MAX];
 
 	ft_bzero(path, PATH_MAX);
-	if (cmd->name[0] == '.' && cmd->name[1] == '/') {
+	if (cmd->name[0] == '.' && cmd->name[1] == '/')
+	{
 		getcwd(path, PATH_MAX);
 		ft_strlcat(path, cmd->name + 1, PATH_MAX);
-	} else if (cmd->name[0] == '/')
+	}
+	else if (cmd->name[0] == '/')
 		ft_strlcpy(path, cmd->name, PATH_MAX);
-	else {
+	else
+	{
 		ft_strlcpy(path, find_command(cmd->name, envp), PATH_MAX);
 		ft_strlcat(path, "/", PATH_MAX);
 		ft_strlcat(path, cmd->name, PATH_MAX);
@@ -54,10 +64,6 @@ int		launch_executable(t_cmd *cmd, char **envp)
 	if (cmd->name[0] == '/' || (cmd->name[0] == '.' && cmd->name[1] == '/'))
 		ft_perror(cmd->name, 1);
 	else
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(cmd->name, 2);
-		ft_putendl_fd(": command not found", 2);
-	}
+		shell_notfound(cmd);
 	exit(127);
 }
