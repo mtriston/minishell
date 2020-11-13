@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/13 16:37:50 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/13 22:49:20 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/13 23:25:39 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static int	execute_cmd_in_parent(t_cmd *cmd)
 
 static void	execute_cmd(t_cmd *cmd, t_exec exec)
 {
-	if (cmd->in == -1)
+	if (cmd->in == -1 || !(cmd->name[0]))
 		return ;
 	if (execute_cmd_in_parent(cmd))
 		return ;
