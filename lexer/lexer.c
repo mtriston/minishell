@@ -20,8 +20,19 @@ static void	handle_quote(char **line, t_token **token, char quote)
 	i = 0;
 	(*line)++;
 	while ((*line)[i] && (*line)[i] != quote)
-		i++;
-	i++;
+	{
+		if (quote == '\"' && (*line)[i] == '\\')
+		{
+			ft_strlcat((*token)->data, (*line), ft_strlen((*token)->data) + i + 1);
+			*line = *line + i + 1;
+			ft_strlcat((*token)->data, (*line), ft_strlen((*token)->data) + 2);
+			*line = *line + 1;
+			i = 0;
+		}
+		else
+			i++;
+	}		
+	i = (*line)[i] == '\0' ? i : i + 1;	
 	ft_strlcat((*token)->data, *line, ft_strlen((*token)->data) + i);
 	*line = *line + i;
 }
@@ -43,7 +54,8 @@ static void	handle_general(char **line, t_token **token)
 	size_t	i;
 
 	i = 0;
-	while ((*line)[i] && !ft_strchr("<>|;$\'\"\\ ", (*line)[i]))
+	while ((*line)[i] && !ft_strchr("<>|\'\"\\", (*line)[i]) \
+			&& !ft_isblank((*line)[i]))
 		i++;
 	ft_strlcat((*token)->data, *line, ft_strlen((*token)->data) + i + 1);
 	*line = *line + i;
@@ -84,7 +96,7 @@ t_token		*lexer(char *line, char **env)
 		}
 		else if (ft_isblank(*line))
 			handle_blank(&line, &current, data_size);
-		if (!ft_strchr("<>|;$\'\"\\", *line))
+		if (!ft_strchr("<>|\'\"\\", *line) && !ft_isblank(*line))
 			handle_general(&line, &current);
 	}
 	return (root);
