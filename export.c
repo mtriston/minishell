@@ -74,9 +74,9 @@ int			validation(t_cmd *cmd, int i)
 		ft_putstr_fd("export: `", 2);
 		ft_putstr_fd(cmd->args[i], 2);
 		ft_putstr_fd("': not a valid identifier\n", 2);
-		return (1);
+		return (0);
 	}
-	return (0);
+	return (1);
 }
 
 void		export_body(int i, t_cmd *cmd)
@@ -110,8 +110,7 @@ int			cmd_export(t_cmd *cmd, char **envp)
 	{
 		while (cmd->args[i])
 		{
-			status = validation(cmd, i);
-			if (change_env(cmd->args[i]) == 0)
+			if (validation(cmd, i) && change_env(cmd->args[i]) == 0)
 				export_body(i, cmd);
 			i++;
 		}
