@@ -3,3 +3,4 @@ minishell
 ./vscode
 CMakeLists.txt
 cmake-build-debug/
+*.o
