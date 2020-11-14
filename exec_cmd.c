@@ -6,51 +6,53 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/13 16:37:50 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/13 16:57:20 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/11/13 23:25:39 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int		execute_cmd_in_child(t_cmd *cmd, char **envp)
+static int	execute_cmd_in_child(t_cmd *cmd, char **envp)
 {
 	g_env.status = SUCCESS;
 	if (cmd->name == NULL)
 		return (FAILURE);
 	if (ft_strcmp(cmd->name, "echo") == 0)
-		g_env.status = launch_builtin(ECHO)(cmd, envp);
+		g_env.status = g_launch_builtin(ECHO)(cmd, envp);
 	else if (ft_strcmp(cmd->name, "cd") == 0)
-		g_env.status = launch_builtin(CD)(cmd, envp);
+		g_env.status = g_launch_builtin(CD)(cmd, envp);
 	else if (ft_strcmp(cmd->name, "pwd") == 0)
-		g_env.status = launch_builtin(PWD)(cmd, envp);
+		g_env.status = g_launch_builtin(PWD)(cmd, envp);
 	else if (ft_strcmp(cmd->name, "export") == 0)
-		g_env.status = launch_builtin(EXPORT)(cmd, envp);
+		g_env.status = g_launch_builtin(EXPORT)(cmd, envp);
 	else if (ft_strcmp(cmd->name, "unset") == 0)
-		g_env.status = launch_builtin(UNSET)(cmd, envp);
+		g_env.status = g_launch_builtin(UNSET)(cmd, envp);
 	else if (ft_strcmp(cmd->name, "env") == 0)
-		g_env.status = launch_builtin(ENV)(cmd, envp);
+		g_env.status = g_launch_builtin(ENV)(cmd, envp);
 	else
 		launch_executable(cmd, envp);
 	return (g_env.status);
 }
 
-int			execute_cmd_in_parent(t_cmd *cmd)
+static int	execute_cmd_in_parent(t_cmd *cmd)
 {
 	if (ft_strcmp(cmd->name, "exit") == 0)
-		g_env.status = launch_builtin(EXIT)(cmd, g_env.env);
+		g_env.status = g_launch_builtin(EXIT)(cmd, g_env.env);
 	else if (ft_strcmp(cmd->name, "cd") == 0)
-		g_env.status = launch_builtin(CD)(cmd, g_env.env);
+		g_env.status = g_launch_builtin(CD)(cmd, g_env.env);
 	else if (ft_strcmp(cmd->name, "export") == 0 && cmd->args[1])
-		g_env.status = launch_builtin(EXPORT)(cmd, g_env.env);
+		g_env.status = g_launch_builtin(EXPORT)(cmd, g_env.env);
 	else if (ft_strcmp(cmd->name, "unset") == 0)
-		g_env.status = launch_builtin(UNSET)(cmd, g_env.env);
+		g_env.status = g_launch_builtin(UNSET)(cmd, g_env.env);
 	else
 		return (0);
 	return (1);
 }
 
-void		execute_cmd(t_cmd *cmd, t_exec exec)
+static void	execute_cmd(t_cmd *cmd, t_exec exec)
 {
+	if (!cmd || !(cmd->name) || !(cmd->name[0]) || cmd->in == -1)
+		return ;
 	if (execute_cmd_in_parent(cmd))
 		return ;
 	g_env.pid = fork();
@@ -71,6 +73,16 @@ void		execute_cmd(t_cmd *cmd, t_exec exec)
 		wait_child(g_env.pid);
 }
 
+static void	execute_with_pipe(t_cmd *cmd, t_exec *exec)
+{
+	pipe(exec->fd_pipe);
+	exec->fd_out = exec->fd_pipe[1];
+	execute_cmd(cmd, *exec);
+	close(exec->fd_pipe[1]);
+	exec->fd_in = exec->fd_pipe[0];
+	exec->fd_out = 1;
+}
+
 void		execute_line(char *cmd_line)
 {
 	t_cmd	*cmd;
@@ -81,18 +93,11 @@ void		execute_line(char *cmd_line)
 	while (*cmd_line)
 	{
 		cmd = NULL;
-		cmd_line = parse_next_cmd(cmd_line, &cmd, g_env.env);
+		cmd_line = parse_next_cmd(cmd_line, &cmd);
 		while (cmd)
 		{
 			if (cmd->next)
-			{
-				pipe(exec.fd_pipe);
-				exec.fd_out = exec.fd_pipe[1];
-				execute_cmd(cmd, exec);
-				close(exec.fd_pipe[1]);
-				exec.fd_in = exec.fd_pipe[0];
-				exec.fd_out = 1;
-			}
+				execute_with_pipe(cmd, &exec);
 			else
 			{
 				execute_cmd(cmd, exec);
@@ -103,17 +108,4 @@ void		execute_line(char *cmd_line)
 		}
 		destroy_cmd(&cmd);
 	}
-}
-
-char		*ft_getenv(char *arg, char **envp)
-{
-	if (ft_strcmp(arg, "?") == 0)
-		return (ft_itoa(g_env.status));
-	while (*envp)
-	{
-		if (ft_strncmp(*envp, arg, ft_found(*envp, '=')) == 0)
-			return (*envp + ft_strlen(arg) + 1);
-		envp++;
-	}
-	return ("");
 }

@@ -54,7 +54,7 @@ int			search_separator(const char *line, char c)
 	in_dquote = -1;
 	while (line[i])
 	{
-		if (line[i] == '\\')
+		if (line[i] == '\\' && in_quote == -1 && in_dquote == -1)
 			i++;
 		else if (line[i] == '\'' && in_dquote == -1)
 			in_quote *= -1;

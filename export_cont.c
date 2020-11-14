@@ -57,3 +57,22 @@ int			is_valid_name(char *str)
 	}
 	return (1);
 }
+
+char		*ft_getenv(char *arg, char **envp)
+{
+	int		i;
+	char	*result;
+
+	i = 0;
+	result = "";
+	envp = g_env.env;
+	if (ft_strcmp(arg, "?") == 0)
+		return (ft_itoa(g_env.status));
+	while (envp[i])
+	{
+		if (ft_strncmp(envp[i], arg, ft_found(envp[i], '=')) == 0)
+			result = envp[i] + ft_strlen(arg) + 1;
+		i++;
+	}
+	return (result);
+}

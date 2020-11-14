@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/19 22:16:56 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/08 15:05:57 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/13 23:06:55 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static char	**parse_cmd_args(t_token **tokens)
 	return (args);
 }
 
-char		*parse_next_cmd(char *cmd_line, t_cmd **cmd, char **env)
+char		*parse_next_cmd(char *cmd_line, t_cmd **cmd)
 {
 	t_token	*tokens;
 	t_cmd	*current_cmd;
@@ -60,7 +60,7 @@ char		*parse_next_cmd(char *cmd_line, t_cmd **cmd, char **env)
 	splited_line = split_pipe(current_line);
 	while (*splited_line)
 	{
-		tokens = lexer(*splited_line++, env);
+		tokens = lexer(*splited_line++);
 		parse_redirects(current_cmd, &tokens);
 		current_cmd->name = parse_cmd_name(&tokens);
 		current_cmd->args = parse_cmd_args(&tokens);

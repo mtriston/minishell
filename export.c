@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/09 19:40:18 by kdahl             #+#    #+#             */
-/*   Updated: 2020/11/13 16:27:31 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/11/14 13:32:12 by kdahl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void		export_print_env(char **envp)
 	}
 }
 
-static int	change_env(char *str)
+int			change_env(char *str)
 {
 	int		i;
 	int		len;
@@ -50,7 +50,7 @@ static int	change_env(char *str)
 	i = 0;
 	len = ft_found(str, '=');
 	flag = len == -1 ? 1 : 0;
-	len = len == -1 ? ft_strlen(str) : len;
+	len = len == -1 ? (int)ft_strlen(str) : len;
 	while (g_env.env[i])
 	{
 		if (ft_strncmp(str, g_env.env[i], len) == 0)
@@ -74,9 +74,9 @@ int			validation(t_cmd *cmd, int i)
 		ft_putstr_fd("export: `", 2);
 		ft_putstr_fd(cmd->args[i], 2);
 		ft_putstr_fd("': not a valid identifier\n", 2);
-		return (1);
+		return (0);
 	}
-	return (0);
+	return (1);
 }
 
 void		export_body(int i, t_cmd *cmd)
@@ -110,9 +110,10 @@ int			cmd_export(t_cmd *cmd, char **envp)
 	{
 		while (cmd->args[i])
 		{
-			status = validation(cmd, i);
-			if (change_env(cmd->args[i]) == 0)
+			if (validation(cmd, i) && change_env(cmd->args[i]) == 0)
 				export_body(i, cmd);
+			else
+				status = 1;
 			i++;
 		}
 	}

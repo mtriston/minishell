@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:22 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/11 20:47:49 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/11/13 20:54:50 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,11 @@ static int	check_begin(char *line)
 	while (*line && ft_isspace(*line))
 		line++;
 	if (*line == '|')
+	{
+		if (*(line + 1) == '|')
+			return (syntax_error("||"));
 		return (syntax_error("|"));
+	}
 	if (*line == ';')
 	{
 		if (*(line + 1) == ';')
@@ -81,6 +85,8 @@ static int	check_next_char(char c, char *line)
 		return (syntax_error("<"));
 	if (c == '<' && *line == '>')
 		return (syntax_error(">"));
+	if (c == '|' && *line == '|')
+		return (syntax_error("||"));
 	if (c == '>' && *(++line) == '>')
 		return (VALID_LINE);
 	while (ft_isspace(*line))
@@ -121,7 +127,6 @@ int			validate_line(char *line)
 		i++;
 	}
 	status = status == SYNTAX_ERROR ? SYNTAX_ERROR : check_end(line);
-	if (status == SYNTAX_ERROR)
-		g_env.status = 2;
+	g_env.status = status == SYNTAX_ERROR ? 2 : g_env.status;
 	return (status);
 }

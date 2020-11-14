@@ -6,7 +6,7 @@
 /*   By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/07 13:58:22 by mtriston          #+#    #+#             */
-/*   Updated: 2020/11/13 17:01:44 by kdahl            ###   ########.fr       */
+/*   Updated: 2020/11/14 12:34:41 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,39 +19,40 @@ int			cmd_echo(t_cmd *cmd, char **envp)
 
 	(void)envp;
 	n_flag = 0;
-	i = 0;
-	if (cmd->args[0] != NULL)
+	i = 1;
+	if (cmd->args[1] != NULL)
 	{
-		if (ft_strncmp(cmd->args[1], "-n", 2) == 0)
+		if (ft_strcmp(cmd->args[1], "-n") == 0)
+		{
 			n_flag = 1;
-		while (cmd->args[++i])
+			i++;
+		}
+		while (cmd->args[i])
 		{
 			ft_putstr_fd(cmd->args[i], 1);
 			if (cmd->args[i + 1] != NULL)
 				ft_putstr_fd(" ", 1);
+			i++;
 		}
-		if (!n_flag)
-			ft_putstr_fd("\n", 1);
 	}
+	if (!n_flag)
+		ft_putstr_fd("\n", 1);
 	return (SUCCESS);
 }
 
 int			cmd_cd(t_cmd *cmd, char **envp)
 {
 	char	*dir;
+	char	*new_pwd;
 
 	if (envp_len(cmd->args) > 2)
 	{
 		ft_perror("cd: too many arguments", 1);
 		return (FAILURE);
 	}
+	change_env(ft_strjoin("OLDPWD=", ft_getenv("PWD", g_env.env)));
 	if (cmd->args[1] == NULL)
 		dir = ft_getenv("HOME", envp);
-	else if (ft_strcmp(cmd->args[1], "-") == 0)
-	{
-		dir = ft_getenv("HOME", envp);
-		cmd_pwd(cmd, envp);
-	}
 	else
 		dir = cmd->args[1];
 	if (chdir(dir) != 0)
@@ -59,6 +60,9 @@ int			cmd_cd(t_cmd *cmd, char **envp)
 		ft_perror("cd", 1);
 		return (FAILURE);
 	}
+	new_pwd = getcwd(NULL, 0);
+	change_env(ft_strjoin("PWD=", new_pwd));
+	free(new_pwd);
 	return (SUCCESS);
 }
 
@@ -86,6 +90,8 @@ int			cmd_exit(t_cmd *cmd, char **envp)
 		return (ft_perror("too many arguments", 2));
 	while (cmd && cmd->args[1] && cmd->args[1][i] && status == 0)
 	{
+		if (cmd->args[1][0] == '+' || cmd->args[1][0] == '-')
+			i++;
 		if (!ft_isdigit(cmd->args[1][i]))
 			status = ft_perror("numeric argument requared", 1);
 		i++;
