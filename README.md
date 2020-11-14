@@ -1,3 +1,3 @@
-# minishell
+# Minishell
 
 ![](shell.gif)
