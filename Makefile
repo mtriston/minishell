@@ -1,60 +1,90 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: kdahl <kdahl@student.21-school.ru>         +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2020/10/05 20:19:48 by kdahl             #+#    #+#              #
-#    Updated: 2020/11/13 23:50:59 by mtriston         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+COM_COLOR   = \033[0;34m
+OBJ_COLOR   = \033[0;36m
+OK_COLOR    = \033[0;32m
+ERROR_COLOR = \033[0;31m
+WARN_COLOR  = \033[0;33m
+NO_COLOR    = \033[m
+
+OK_STRING    = [OK]     
+ERROR_STRING = [ERROR]
+WARN_STRING  = [WARNING]
+COM_STRING   = Compiling
 
 NAME = minishell
 
-SRCS = \
-main.c \
-builtins.c \
-exec.c \
-exec_cmd.c \
-error.c \
-export.c \
-export_cont.c \
-unset.c \
-lexer/lexer.c \
-lexer/lexer_utils.c \
-lexer/prepare_line.c \
-lexer/read_line.c \
-lexer/token_list_utils.c \
-lexer/validate_line.c \
-parser/cmd_list_utils.c \
-parser/parse_redirects.c \
-parser/parser.c \
-parser/split_pipe.c \
-signals.c \
-launching_cmd.c\
+SRC_DIR = src/
+OBJ_DIR = bin/
+HDR_DIR = includes/
 
-OBJS = $(SRCS:.c=.o)
+INCLUDES = -I$(HDR_DIR)
 
-CC = gcc -g -Wall -Wextra -Werror
+CC = gcc
+FLAGS = -Wall -Werror -Wextra -g
 
-all:	$(NAME)
+LEXER_DIR = lexer/
+LEXER_FILES = $(addsuffix .c, $(addprefix $(LEXER_DIR),\
+			lexer\
+            lexer_utils\
+			prepare_line\
+			read_line\
+			token_list_utils\
+			validate_line\
+			))
 
-%.o : %.c
-			$(CC) -c $< -o $@
+PARSER_DIR = parser/
+PARSER_FILES = $(addsuffix .c, $(addprefix $(PARSER_DIR),\
+			parser\
+			cmd_list_utils\
+			parse_redirects\
+			split_pipe\
+			))
 
-$(NAME):	$(OBJS)
-			make -C libft
-			$(CC) $(OBJS) -L ./libft -lft -o $(NAME)
+EXECUTOR_DIR = executor/
+EXECUTOR_FILES = $(addsuffix .c, $(addprefix $(EXECUTOR_DIR),\
+			executor\
+			executor_utils\
+			launch_executable\
+			))
+
+BUILTINS_DIR = builtins/
+BUILTINS_FILES = $(addsuffix .c, $(addprefix $(BUILTINS_DIR),\
+			builtins\
+			export\
+			export_utils\
+			unset\
+			))
+
+OTHER_FILES = $(addsuffix .c,\
+			main\
+			error\
+			signals\
+			)
+
+SRC_FILES = $(LEXER_FILES) $(PARSER_FILES) $(EXECUTOR_FILES) $(BUILTINS_FILES) $(OTHER_FILES)
+
+OBJ_FILES = $(addprefix $(OBJ_DIR), $(SRC_FILES:.c=.o))
+
+all: $(OBJ_DIR) $(NAME)
+
+$(NAME): $(OBJ_FILES)
+	@ make -C ./libs/libft
+	@ $(CC) $(FLAGS) $(OBJ_FILES) -o $(NAME) -L./libs/libft -lft
+	@echo "$(OK_COLOR) $(OK_STRING) $(OBJ_COLOR) $(NAME) $(NO_COLOR)"
+
+$(OBJ_FILES): $(OBJ_DIR)%.o : $(SRC_DIR)%.c
+	@$(CC) $(FLAGS) -c $< -o $@
+	@echo "$(COM_COLOR) $(COM_STRING) $(OBJ_COLOR) $(@) $(NO_COLOR)"
+
+$(OBJ_DIR):
+	@mkdir $(OBJ_DIR)
+	@mkdir $(addprefix $(OBJ_DIR), $(LEXER_DIR) $(PARSER_DIR) $(EXECUTOR_DIR) $(BUILTINS_DIR))
 
 clean:
-			rm -rf $(OBJS)
-			$(MAKE) clean -C ./libft
+	@rm -rf $(OBJ_DIR)
+	@echo "$(WARN_COLOR) All object files have been removed $(NO_COLOR)"
 
-fclean:	clean
-		rm -rf $(NAME)
-		$(MAKE) fclean -C ./libft
+fclean: clean
+	@rm -f $(NAME)
+	@echo "$(WARN_COLOR) $(NAME) has been removed $(NO_COLOR)"
 
-re:		fclean all
-
-.PHONY:	all clean fclean re
+re: fclean all
