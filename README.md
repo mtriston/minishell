@@ -1,8 +1,6 @@
 # minishell
 My shell implementation.
 
-![gif with a demonstration](https://github.com/sudo-spivak/minishell/blob/master/minishell.gif)
-
 ## Features
 * Promt with username and current directory.
 * Search and launch the right executable (based on the PATH variable or by using
@@ -30,3 +28,6 @@ cd minishell
 make
 ./minishell
 ```
+## Usage
+
+![gif with a demonstration](https://github.com/sudo-spivak/minishell/blob/master/minishell.gif)
