@@ -1,7 +1,7 @@
 # minishell
 My shell implementation.
-![gif with a demonstration](https://github.com/sudo-spivak/minishell/blob/master/minishell.gif)
 
+![gif with a demonstration](https://github.com/sudo-spivak/minishell/blob/master/minishell.gif)
 
 ## Features
 * Promt with username and current directory.
@@ -23,7 +23,7 @@ relative or absolute path) like in bash
 * $? work like in bash
 * ctrl-C, ctrl-D and ctrl-\ have the same result as in bash
 
-# how to install
+## How to install
 ```bash
 git clone https://github.com/sudo-spivak/minishell.git
 cd minishell
